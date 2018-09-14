@@ -1,0 +1,130 @@
+什么是jQuery
+·jQuery是一个优秀的JS框架，一个轻量级的JS库
+·它封装了JS、CSS、DOM提供了一致的，简洁的API
+·兼容CSS3及其各种浏览器
+·使用户更方便地处理HTML、Events、实现动画效果，并且方便   地位网站提供AJAX交互
+·使用户的HTML页面保持代码和HTML内容分离 降低耦合度 方便   团队开发
+·轻量级：侵入性低 耦合度低 
+  重量级：侵入性高 耦合度高 
+使用jQuery
+1.引入jQuery的js文件
+2.使用选择器定位要操作的节点
+3.调用jQuery的方法进行操作
+
+1.jQuery对象
+为了解决浏览器兼容性问题而提供的一种统一封装的对象
+通过jQuery选择器选中的对象，就是jQuery对象
+本质就是DOM数组 
+可以直接操作这个数组：
+-obj.length;
+-obj.get(index);
+-obj[index];
+DoM对象转换为jQuery方法
+$(DOM对象);
+2.jQuery的选择器
+作用：定位元素，施加方法
+-基本选择器
+ -$("p"); 元素选择器
+ -$(".class");类选择器
+ -$("#id");   id选择器
+ -$(".class,h1");选择器组
+-层次选择器
+ -$("#nb + li"); 选中宁波的一个弟弟
+ -$("#nb ~ li"); 选中宁波的所有弟弟 
+-过滤选择器
+ 基本过滤选择器
+ 在一组元素中选择（table/ul/ol）
+ -$("table tr:first"); 取到第一个tr
+ -$("table tr:last");  取到最后一个tr
+ -$("table tr:odd");   取到奇数行
+ -$("table tr:even");  取到偶数行
+ -:eq(index); 选中下标为index的行
+ -:gt(index); 下标大于index的行
+ -:lt(index); 下表小于index的行
+ -:not(#tr2); 排除某一行
+  内容过滤选择器
+ -:contains("haha");  内容包含haha的元素
+  可见性过滤选择器
+ -:hidden  匹配所有不可见元素
+ -:visible 匹配所有可见元素
+  属性过滤选择器
+ -[value]  带有value属性的元素
+ -[id=d2]  选择id=d2的元素
+  状态过滤选择器(表单)
+  text的disabled属性可以设置文本框可用
+ -:enabled  匹配可用元素
+ -:disabled 匹配不可用元素
+ -:checked  匹配选中的checkbox
+ -:selected 匹配选中的option
+-表单选择器
+ 都是用来选择input元素
+ -:text 
+ -:password
+ -:radio
+ -:checkbox
+ -:submit
+ -:reset  :+框体类型
+ -:file
+ -:hidden
+ -:button  匹配按钮
+ -:reset 
+3.jQuery操作DOM
+-读写节点
+ -obj.html();
+ -obj.html("<p>1</p>");
+ -obj.text();
+ -obj.text("1");
+ -obj.val();读写元素的value属性
+ -obj.attr("属性名");读写元素的任意属性
+-增删节点
+ 创建节点
+ -$("<span>你好</span>");
+ 添加节点
+ -append(obj);  作为最后一个加入
+ -prepend(obj); 作为第一个加入
+ -after();
+ -before();      给元素加哥哥或者弟弟 同一层级
+ 删除节点
+ -obj.remove(); 括号里可以加选择器
+ -obj.empty();  清空节点  obj.html("");
+4.样式操作
+ -addClass("");     追加样式 可以连续追加
+ -removeClass("");  移除样式
+ -toggleClass("");  切换样式
+ -hasClass("");     判断有没有某样式 没有返回false
+ 样式表里没有的话  不推荐使用
+ .css("color");       读取属性
+ .css("color","blue");修改属性
+5.遍历节点  
+  -.children(); 直接子节点
+  -.parent();   直接父节点
+  -.next();     下一个兄弟节点
+  -.prev();     上一个兄弟节点
+  -.siblings(); 所有的弟弟
+  -.find("选择器"); 找出满足选择器的孩子
+6.实现事件绑定
+  在页面DOM对象加载完以后绑定
+  -obj.bind('click',function);
+  -$obj.click(function);
+  -$(function(){}); 这里面的函数是在页面加载之后执行
+  -$(function(e){});e.target 获取事件源 e.pageX;
+  处理事件的机制：冒泡机制 事件依次向上抛给父元素
+  e.stopPropagation();
+  -合成事件
+  hover(mouseenter,mouseleave); 光标悬停事件
+  toggle(); 在多个事件相应中切换 显示和隐藏之间切换
+7.模拟操作
+  .trigger("focus"); 模拟光标切入事件
+
+jQuery动画
+
+-show()/hide()  	显示/隐藏  从右下角拉大
+-slideDowm()/slideUp()  显示/隐藏  垂直上下显示
+-fadeIn()/fadeOut()     显示/隐藏  淡入淡出 渐变
+
+自定义动画效果
+-animate(偏移位置，执行时间，回调函数);
+//{"left":"100px"}的意思是 
+//以左侧边为基准，向右偏移100像素
+-要让元素动起来，就要改变它的定位方式
+position:relative;

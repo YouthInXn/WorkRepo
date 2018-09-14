@@ -1,0 +1,82 @@
+Ajax
+
+1.简介
+
+  Asynchronous JavaScript and XML
+  异步JavaScript和XML
+  Ajax属于客户端和服务器端交互的技术
+  
+2.Ajax优点
+
+  跨平台跨语言的数据格式XML(JSON)
+  原有交互模式：
+  特点：1.整个页面刷新  2.请求和响应同步处理
+  浏览器发送请求-->Tomcat服务器-->浏览器显示HTML
+  
+  Ajax交互模式：
+  特点: 1.局部刷新  2.请求和响应异步处理  3.提高了程序交换效率
+  浏览器发送请求-->XMLHttpRequest发送请求-->Tomcat服务器
+  -->XMLHttpResponse接收结果-->结果解析显示
+  
+3.Ajax技术
+
+  Ajax技术是一系列技术的综合运用
+  a.JS  b.XMLHttpRequest对象为核心  c.HTML/CSS页面渲染  d.涉及XML，JSON等数据交互
+  
+4.使用Ajax
+
+  1.获取XMLHttpRequest对象
+  var xmlhttp;
+	if (window.XMLHttpRequest)
+	{
+      //  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+      xmlhttp=new XMLHttpRequest();
+	}
+	else
+	{
+      // IE6, IE5 浏览器执行代码
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  2.创建请求
+    url要写全路径，第三个参数默认true
+    xmlhttp.open("请求方式","url",设置是否异步(true是异步));
+  3.发送请求
+    xmlhttp.send();
+    如果为get请求send(null)
+    如果为post请求填写消息体内容
+    但是要设置消息头的相关参数
+    xmlhttp.setRequestHeader("content-type","application/x-www-form-urlencoded");
+    
+5.XMLHttpRequest属性
+  
+  readystate:0,1,2,3,4  表示请求处理的状态 4为处理完毕
+  onreadystatechange = function(){}  //readyState改变时调用,回调函数
+  
+  responseText:获取返回的文本信息
+  responseXML:获取返回的XML信息
+  status:状态码
+  
+  
+  
+axios
+
+1.介绍
+
+axios是一个基于promise的Http库，用来处理Http请求和响应，可以用在浏览器和node.js中
+
+2.安装
+
+npm: npm install axios
+cdn: <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+CDN是内容分发网络，其目的是使用户可就近取得所需内容，解决Internet网络拥挤的状况，提高用户访问网站的响应速度。
+https://www.bootcdn.cn/
+
+3.简单使用
+
+axios.get(url).then(function(response){}).catch(function(error){});
+axios.post(url,{parmas}).then(function(response){}).catch(function(error){});
+
+get请求的get()中的参数也可以这样写
+axios.get(url,parmas)
+then方法的参数是回调函数
+catch中的参数是错误处理函数

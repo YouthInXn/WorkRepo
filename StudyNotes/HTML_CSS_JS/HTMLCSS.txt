@@ -1,0 +1,469 @@
+HTML
+
+
+浏览器       服务器         数据库	
+HTML         java基础       Oracle/mysql 
+CSS            javase            DDL,DML
+JS
+1.课程介绍
+  1）web基础就是教大家如何做网页；
+  2）分为三部分
+        A、HTML
+              用来勾勒出网页的结构和内容；
+        B、CSS
+              用来给网页化妆，美化网页；
+        C、JavaScript
+              用来让网页呈现出动态的数据和效果。
+  3）重点：
+        JavaScript:
+ 	-Java程序猿使用JS来实现页面的业务逻辑。
+	-美工做出静态页面（HTML+CSS)
+	-JS操作的目标是HTML.CSS，是以他们为基础的，所以必须	掌握他们；
+  4）为什么要学习做网页
+        A、什么是Web项目
+	带网页的项目/使用浏览器访问的项目；
+        B、Web项目的客户端使用网页来实现，
+	所以我们要学会做网页；
+2.XML和HTML的关系
+   1）XML
+	A.可扩展标记语言，用来存储或传输数据。
+ 	   -标签可扩展
+	   -属性可扩展
+ 	   -元素之间的嵌套关系可扩展。
+	B.标签
+	   双标签：<标签名></标签名>
+	   单标签：<标签名/>
+	   关系：<标签名/> = <标签名></标签名>
+	C.属性
+	   -属性必须定义在开始标签上；
+	   -属性名=“属性值”
+	   -属性名不能重复，且无序
+	D.元素
+	   <标签名 属性名=“属性值”>内容</标签名>
+   2）HTML
+         A.HTML是超文本标记语言，用来显示数据
+         B.实际上HTML是语法固定的XML
+	    a.标签固定
+	    b.属性固定
+	    c.元素嵌套关系固定
+         C.学习HTML就是学习这些固定的属性，标签，嵌套关系
+3.如何解决乱码问题
+   1）创建HTML时，需要将文件编码设置为utf-8
+   2）需在<head>元素下，使用<meta>元素设置页面的编码；
+
+
+
+1.HTML三要素
+   1.浏览器  2.服务器 3.HTTP协议。
+   部署在服务器上，运行在浏览器上。
+2.HTML概述
+   1.基本结构
+      <!--html是唯一的根元素 -->
+      <html>
+        <head>
+	<!-- 设置文档标题，编码，引入的资源-->
+        </head>
+        <body>
+	<!--页面呈现的内容-->
+        </body>
+      </html>
+  2.文档类型
+     1.<!doctype>声明网页版本，使浏览器正确解析显示
+        <!doctype html>   --声明文档为HTML5.0版本
+     2.<title></title> 设置文档标题，写在head里。
+        <meta charset="utf-8"/> 设置编码格式。
+ 3.文本处理
+    1.标题元素
+       <h1>一级标题</h1>  设置一级标题
+       <h2>二级标题</h2>  设置二级标题
+    2.段落元素
+       <p>一段文字</p> - 段落独立自成一行。 
+    3.列表元素
+       a.有序列表 
+          <ol>
+	<li></li>
+          </ol>
+       b.无序列表
+          <ul>
+	<li>杭州市</li>
+	<li>宁波市</li>
+	<li>温州市</li>
+          </ul>
+       c.列表嵌套
+         <ol>
+	<li>
+	浙江省
+	<ul>
+	<li>杭州市</li>
+	<li>宁波市</li>
+	<li>温州市</li>
+	</ul>
+	</li>
+	<li>江苏省</li>
+	<li>山东省</li>
+         </ol>
+    4.div分区元素（多个div是默认垂直布局）
+           div用来勾勒出页面布局，便于开发。
+	<body>
+	  <div>LOGO</div>
+	  <div>内容</div>
+	  <div>版权标识</div>
+	</body>
+    5.元素显示方式
+       1）块级元素
+	1.独立成行 默认垂直布局
+	2.占据一个矩形区域
+	3.<hn>,<p>,<ul>,<div>
+	4.块级元素会影响页面的布局。
+       2）行内元素
+	1.不独立成行，可以横向布局
+	2.不会占据矩形区域，他是用来修饰段落		中的某几个字的
+	3.<span>,<i>,<u>...
+	4.行内元素不会影响页面布局。
+    6.行内元素
+	*<span>内容</span> 通过给span设置属性来	                                 给内容附加样式。
+	<i>这里的文字会倾斜</i>,   
+	<em>这里的文字会倾斜</em>
+	<b>加粗文字</b>
+	<strong></strong>
+	<u>下划线</u>
+	<del>删除线</del>
+	<br>=换行，&nbsp; = 空格，
+	&lt=小于号，&gt=大于号。
+    7.图片和超链接
+	1.图片
+	<img src="../image/pig.png"/> src写路径
+	绝对路径和相对路径
+	../表示当前文件向上跳一级
+	2.超链接(属于行内元素)
+	href属性用来设置连接地址
+	        1.连接公共资源  写网址
+	        2.连接本地资源  写路径
+	taget属性用来设置打开方式是：
+	        1._blank 新页面打开
+	        2._self  在本窗口中打开
+	<a href="www.baidu.com" target="_blank">
+	百度一下</a>
+	3.锚点（特殊的超链接）
+	   定义一个锚点
+	   <a name="#锚点S">锚点S</a>
+	   定义一个超链接，链接到锚点S
+	   <a href="#锚点S">去锚点S</a>
+	-->增加到顶部的超链接时，顶部不需要设置	超链接，顶部是默认的锚点。
+	<a href="#">去顶部</a>
+     8.表格
+        默认情况下，表格的边线是看不见的。
+        可以给table统一设置边线。
+	创建一个两行两列的表格
+               <table boder = "1px">
+	   <tr>
+	     <td>第一行第一列</td>	   	
+	     <td>第一行第二列</td>
+	   </tr>
+	   <tr>
+	     <td>第二行第一列</td>
+	     <td>第二行第二列</td>
+	   </tr>
+	</table>
+       table 常用属性 ：border  width heigth  
+       tr:align/valign
+       td:colspan/rowspan
+	colspan:跨列
+	rowspan:跨行
+	因为跨行要占第二行第一列位置，所以要先删	除第二行第一列的td。第一行第一列占据几格	，rowspan就等于几。
+	   <td rowspan="2">第一行第一列</td>
+     9.行分组
+        将表格分组，目的是为了方便对组内元素设置样式         及编程（写JS）。
+    <table border="1px" width="60%">
+      <!-- 第一行是标题行 -->
+      <!-- 标题行用th 会加粗并且自动居中 -->
+      <thead>
+        <tr>
+          <th>商品名称</th>
+          <th>单价</th>
+          <th>数量</th>
+          <th>金额</th>      
+       </tr>
+      </thead>
+      <!-- 中间三行是数据行 -->
+      <tbody style="color:red;">
+      <tr>
+        <td>鼠标</td>
+        <td>50</td>
+        <td>2</td>
+        <td>100</td>
+      </tr>
+      <tr>
+        <td>键盘</td>
+        <td>100</td>
+        <td>1</td>
+        <td>100</td>
+      </tr>
+      <tr>
+        <td>耳机</td>
+        <td>200</td>
+        <td>1</td>
+        <td>200</td>
+      </tr>
+      </tbody>
+      <!-- 合计行 -->
+      <tfoot>
+      <tr>
+        <td colspan = "3" align="center"><b>合计                </b></td>
+        <td>400</td>
+      </tr>
+      </tfoot>
+    </table>
+    10.表单        form元素在页面上圈定表单的范围，其内部的空间可以提交。 
+        表单是页面向服务器提交数据的手段。
+        属性：actiom 表单提交的路径url
+       --->表单控件
+	form是表单，内部可以包含多个控件。
+	控件内可以输入值。提交数据是以表单为单元提交。一次提交一个表单所包含的所有控件的值。
+	表单只是用来圈定提交的范围，它是透明的。
+ 	1.input元素
+	   <form action="#"> action写提交路径
+	     <p>
+	     <lable for="username">账号：</label>
+	     label是表单中的文本，通过for属性可以绑定到input元素上，使得点击label此label时	，相当于点击了对应的input。
+	     <input type="text"/ id="username">文本框
+	     <!--id是元素的身份证号码，唯一标识-->
+	     </p>
+	     <p>密码：
+	     <input type="password"/>密码框
+	     </p>
+	     <input type="radio" checked name="a"/>	      单选框
+	      checked设置选中
+	      把多个单选框的name属性设置为一样的，		      它们会变成一组radio，同组之间互斥
+	     <input type="checkbox"/>复选框
+	     <input type = "submit" value="提交"/>
+	      提交按钮。功能内置为提交。 value为按	      钮设置按钮上的文字。
+	     <input type = "reset"/> 重置按钮
+	     <input type = "button"/>普通按钮
+	   </form>
+	2.其他元素
+	  1.隐藏域
+	   <input type="hidden" value="123"/>	    	   (value设置文本框的默认值)
+	  2.文件选择框
+	   <input type="file" value="浏览---"/>
+	  3.文本域
+	   <textarea cols="20" rows="5">
+	   请输入自我介绍...</textarea>
+	  4.选择框
+	   <select>
+	      <option>-请选择-<option>
+                     <option>JAVA</option>
+                     <option>PHP</option>
+                     <option>C++</option>
+	   </select>
+	  5.标签
+	    语法格式：<label for="控件id"></label>
+
+
+
+
+CSS
+
+css就是给网页化妆的
+1.如何使用css
+   1.内联样式
+      直接写在元素的属性上
+   2.内部样式 
+       写在<head>
+	   <style type="text/css">
+		h1{color:red;}
+                  </style>
+              </head>
+   3.外部样式
+       单独写一个.css文件 通过<link/>引入
+       <head>
+          <style type="text/css">
+             <link rel="stylesheet" type="text/css"                href="../css/style.css"/>
+          </style>	
+       </head>
+2.css语法规范
+   h1           {color:red;font-size:1px;}
+ 选择器                   声明
+3.css规则特性
+   1.继承性
+     例如给body设置了样式
+      <style type="text/css">
+	body{font-family:"微软雅黑";}
+      </style>
+      则body里的元素<h1><p>都继承这个样式
+   2.层叠性
+     <style>
+	p{color:red;}
+    	p{font-size:1px;}
+     </style>
+     设置的不同方面，就会叠加在一起
+   3.优先级
+     规则：内联>内部/外部样式>浏览器默认样式
+      内部/外部样式采用就近原则。
+      重复定义以最后一次设置生效
+3.css选择器
+   1.元素选择器
+      通过元素名选择目标（选择范围大）
+      body{color:black;}
+   2.类选择器
+      <h1 class="imp">一级标题</h1>
+      <h2 class="imp">二级标题</h2>
+      .imp{color:blue;}
+      给所有class相同的元素设置样式
+   3.id选择器
+      #p1{ color:red;}
+      <p id=p1>id选择器<p>
+      给单独的元素设置样式
+   4.选择器组
+      .imp,#p1,div{}
+   5.派生选择器
+      后代选择器 ：
+      body p{}  选择body下的所有p元素，以及p下的所有                     后代
+      子选择器
+      body>p{} 选择body下的所有p元素，只有儿子没有                     孙子
+   6.伪类选择器
+     伪类选择器用于设置用一个元素在不同状态下的样式
+     -:link
+       向未被访问的超链接添加样式
+       a:link{color:blue;}
+     -:visited
+       向已被访问的超链接添加样式
+       a:visited{color:red;}
+     -:active
+       向被激活的超链接添加样式(正在被点的样式)
+       #btn:active{background-color:blue;}
+     -:hover
+       当鼠标悬停至元素上方时，向元素添加样式
+       a:hover{background-color:blue;}
+     -:focus
+       当元素获取焦点时，添加样式
+       向id=t1的文本框添加样式
+       #t1:focus{background-color:#ccc;}
+4.css声明
+border和box
+  1.border
+    1.border属性:用来设置元素的边框
+       -->四边设置  
+             border:1px  dashed/solid #ccc; //solid实线			                 dashed虚线
+       -->单边设置
+             border-left:2px  solid #ccc;
+     2.样式单位
+        -% 百分比  动态
+        -px 像素点  固定
+        -em 当前字体尺寸，一个字就是1em，用于设置首	
+	行缩进，行距（1.6em）
+        -颜色 #ccc=#cccccc; 16进制  rgb三原色
+     3.overflow 当内容溢出元素框如何处理
+                      -visible 溢出了也显示
+                      -hidden  溢出的部分不显示
+                      -scroll      溢出/不溢出都加滚动条
+                      -auto 自动判断是否溢出加滚动条
+  2.box  -框模型 
+             -内边距:padding 影响元素和border之间的距离
+             -外边距:margin  影响元素之间的距离
+    height和width指的都是净宽高
+    元素实际宽=
+    width+2padding+2border+2margin
+    元素实际高=
+    height+2padding+2border+2margin
+   1.边框
+    1.四边设置
+       #d1{
+	 padding:20px;
+         margin:40px;
+           }
+    2.单边设置内外边距
+       #d2{
+         padding:20px 30px 20px 30px;  //顺时针 上 右 下 左
+         padding-left:20px;
+          }
+    3.对边设置
+       #d3{
+         padding:20px 40px;  //上下20px  左右40px
+         margin:20px auto;   //外边距的上下20px,左右居中
+         }
+   2.背景设置
+       body{
+         background-image:url("../image/background.jpg")
+         background-repeat:no-repeat;   //设置不重复
+                           repeat;      //设置平铺，默认
+                           repeat-x;    //设置只水平平铺    
+         background-attachment:fixed;   //设置背景图不滚动，scoll滚动
+            }
+       div{
+          background-position:center;   //设置图片相对div位置
+         }
+      /*统一设置*/
+      .hero{
+  
+        background:url("../image/hero.png") no-repeat center;
+          }
+   3.文本格式化
+     指定字体：font-family:'微软雅黑';
+     字体大小：font-size:15px;
+     字体加粗：font-weight:bold;
+     字体颜色：color:red;
+     文本排列：text-align:center; //元素内部文本居中，不是元素本身居中
+     文本下划线：text-decoration:underline; //设置下划线
+     行高：line-height:1.6em;  //设置行高，建议1.6em;
+                                 把行高设置得和父元素高度一致，文字会垂				                 直居中
+     首行文本缩进：text-indent:2em;  
+     颜色表示：1.十进制 rgb(10,20,30)
+               2.百分数 rgb(10%,20%,30%)
+               3.十六进制 #ff00ff;
+   4.表格样式
+     适用BOX模型的样式
+     特殊：合并缝隙 border-collapse:collapse;  //设置给table
+     -->table里的th是换td的  用来设置标题列（自动加粗，居中）
+     -->给按钮设置前景色就可以调整按钮的文字颜色 color:#fff;
+   5.定位
+     1.流定位
+       默认布局。块级上下，行内左右
+     2.浮动定位
+       让元素脱离普通流定位，依旧位于父元素之内，比原来的队列层面高一层。
+       经常使用它来实现特殊定位效果,使块级元素实现水平布局
+       浮动的元素离开队列-->其他元素填充-->浮动元素重新定位
+     3.消除浮动影响
+       p{
+        clear:right;  //消除右浮动对p的影响。 只能消除对p的影响，无法消除对	        }				     外层div的影响。
+       彻底消除：在元素最后面写一个空元素，对这个元素设置属性，clear:right;
+                 <div style:"border:0; clear:right;"></div>
+   6.相对定位
+     元素还在原来的位置，需要稍微做出偏移 
+      div{position:relative;
+          left:50px;
+          top:50px;}
+   7.绝对定位
+     将元素放在固定位置，以最近的特殊定位的父元素为标准。
+     通常给父元素设置相对定位，但是不加偏移，来作为子元素的标准
+     #outter{
+       position:relative;
+      }
+     #d1{
+       position:absolute;
+       right:0; 
+       bottom:0;
+      }
+     -->z-index属性,最底层序号为1，越往上越大。
+     img:hover{z-index:999;}
+   8.固定定位
+     position:fixed;
+     相对页面的位置。
+     案例：-回顶部的标签
+   9.控制有序无序列表的标记
+     list-style-image:url("../img/pig.png"); 标记换位某图片
+   10.显示方式
+     -块元素  从上至下  <h1> <p> <div>
+     -行内元素 从左至右 <span> <a>
+     -行内块  从左至右  <input> <img>
+     除了默认显示效果之外，可以使用display属性来修改元素框的显示方式
+     display:none;不显示该元素  --常用
+             block;设置为块元素
+             inline;设置为行内元素
+             inline-block;设置为行内块
+   11.鼠标形状
+      cursor  -default  默认
+              -pointer  手型
+              -wait     等待圈
+              -help     鼠标旁边带个问号
+              -text     进入编辑
