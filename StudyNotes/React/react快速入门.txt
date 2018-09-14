@@ -1,0 +1,194 @@
+React
+
+1.安装react
+
+ 	  首先搭建Node.js环境，用npm安装react
+  
+ 	  在IDEA中新建react项目，在终端中移动到项目目录，输入命令
+  
+    	npm install react react-dom -save
+  
+2.开发环境搭建
+
+  
+ 	  如果要使用JAX/ES6新特性，React代码是无法被浏览器正确解析的
+  
+ 	  所以需要为React搭建环境，通过工具对React代码进行编译
+  
+ 	  在终端中输入命令
+  
+ 	  npm install -g create-react-app
+    create-react-app example-app
+    
+	  即可快速搭建开发环境
+	  
+3.JSX语法
+
+  学习参考:http://doc.react-china.org
+  
+  1>JSX简介
+    一种 JavaScript 的语法扩展。
+    允许在JS中嵌入XML/HTML元素的语法
+    本身具有防注入攻击
+  
+  2>元素渲染
+    元素是构成 React 应用的最小单位。
+    const element = <h1>Hello</h1>;
+    在一个id为root的div中，所有内容由React DOM管理，
+    它是React的根DOM节点
+    要将元素渲染到根DOM节点上，通过把元素传递给ReactDOM.render()方法
+    来将其渲染到页面上
+    React元素当被创建之后就是不可变的
+    React只会更新必要的部分
+    
+  3>组件和属性
+    可以用函数定义组件：
+    function welcome(props){
+      return <h1>Hello,{props.name}</h1>;
+    }
+    它接收单一的props对象并返回一个react元素
+    用ES6的Class定义组件
+    class welcome extends React.Component{
+      render(){
+        return <h1>Hello,{props.name}</h1>;
+      }
+    }
+    !组件名必须以大写开头
+    所有的React组件必须像纯函数那样使用它们的props。(值不被改变)
+  
+  4>State&生命周期
+    状态与属性非常类似，但是状态是私有的，完全受控于当前组件
+    局部状态功能只适用于类组件
+    当组件第一次加载到DOM中：挂载
+    组件从DOM中移除：卸载
+    在组件类中声明方法，当挂载或者卸载的时候执行一些代码
+    挂载的方法componentDidMount(){}
+    卸载的方法componentWillUnmount(){}
+    这些方法被称为生命周期钩子
+    
+   *过程:
+    当组件被传入ReactDOM.render()中时
+    a.React调用Clock的构造函数,初始化属性和状态
+    b.然后调用组件的render()方法来渲染DOM
+    c.当输出插入到DOM中后调用componentDidMount()
+      -->* 在即将挂载方法中如果调用setState();改变状态
+           则会重新调用render方法渲染DOM
+      -->1.setState((prevState,props)=>{return {};});
+           当该方法的参数是个函数时，该函数可以传入两个参数
+           prevState是未改变的状态，props是属性对象，这两个参数会自动传递到函数中去
+         2.setState({},function callBack(){});
+           setState是异步操作函数，在状态更新完成之后会调用回调函数
+    d.当组件被移除时，React调用函数componentWillUnmount()
+  
+  5>事件处理
+    类比HTML中<button onclick="open()"></button>
+    React中有一些不同:
+	在函数组件中这样可以直接调用open函数
+    <button onClick={open}></button>
+	在类组件中：
+	<button onClick={this.open}></button>
+		这样调用必须在构造器中绑定this
+		this.open = this.open.bind(this)
+		open(){}
+		1.或者不需要绑定this使用属性初始化器(这个语法在create react app中默认开启)
+		open = () => {}
+		2.使用箭头函数：<button onClick={(e)=>{this.open(e)}></button>
+		open(){}
+		---> 箭头函数有个问题是：每次触发onclick事件都会创建一个不同的回调函数，当该函数作为属性传
+				到子组件中时，可能会导致子组件重新渲染，因此建议使用bind,或者使用属性初始化语法。
+    
+    *-->关于this：(不完善，待补充)
+        1.function拥有自己的this,this指代调用者，谁调this就是谁(包括间接调用);
+          另外在构造函数中,this指向new出来的实例
+          var obj={
+           info:"info",
+           getInfo:function(){
+             console.log(this.info); //obj.info调用时，this指向obj
+           }
+          }
+        2.箭头函数中的this,指向全局,箭头函数本身没有this;
+        3.类组件内部的this指向该组件实例;
+        4.关于函数的三个方法:
+          -call(this,a,b);//call 方法可以用来代替另一个对象调用一个方法
+                            call(this);让当前环境下的this去调用函数
+          -apply(this,[a,b]);//作用与call相同，参数有区别
+          -bind();//方法的主要作用就是将函数绑定至某个对象,
+                    函数体内this对象的值会被绑定到传入bind()函数的值。
+  
+  6>列表&Keys
+    渲染无序列表可以通过在<ul></ul>中加上数组.map()转过来的<li></li>
+    Keys可以在DOM中的某些元素被增加或删除的时候帮助React识别哪些元素发生了变化
+    一个元素的key最好是这个元素在列表中拥有的一个独一无二的字符串
+    通常使用数据的id作为key
+    Key通常放在listItems(一堆li)上，而不应该放在li元素上
+    map()方法内部调用元素时，要为每个元素加上独一无二的key
+    key会作为给React的提示，但不会传递给你的组件。
+    props.key不能被读取
+    
+  7>表单
+    <form onSubmit={}>
+     <input type='text' onChange={}/>
+     <input type='submit' value='提交'/>
+    </form>
+    在表单提交事件中要关闭默认刷新页面，也就是在调用函数中声明event.preventDefault();
+	
+--> React 中的元素、节点、组件
+
+	元素：const element = <h1 className = 'greeting'> Hello! </h1> 
+		
+		  JSX语法会在编译时候改为对React.createElement(type, props, children)的调用
+		  
+		  编译后的结果为
+		  
+		  const element = React.createElement(
+			'h1',
+			{className:'greeting'},
+			'Hello!'
+		  )
+		  
+		  最终element会变成一个普通的Object对象
+		  {
+			type:'h1',
+			props:{
+			  className:'greeting',
+			  children:'Hello'
+			}
+		  }
+		  
+	组件：组件最核心的作用就是返回React元素
+	
+		  当组件内部有自定义组件时，React不知道该如何渲染该组件
+		  
+		  但是会根据type的首字母来判断是否是React组件。
+		  
+		  如果是，则会继续调用React.createElement()方法，返回一个Object对象
+		  
+	节点：PropTypes.node
+	
+		  React节点指可以被React渲染的数据类型：数字、字符串、React元素
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+  

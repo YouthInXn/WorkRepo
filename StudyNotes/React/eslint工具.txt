@@ -1,0 +1,106 @@
+1.ESlint是什么？
+
+	ESLint 是一个语法规则和代码风格的检查工具,
+	可以用来保证写出语法正确、风格统一的代码。
+	它的目标是保证代码的一致性和避免错误
+	给项目代码设置统一的格式(缩进，空格等)
+
+2.安装(基于Node.js)
+
+  -全局安装(让ESlint适用你全部的项目)
+   
+   npm install -g eslint
+   
+  -本地安装(只用于本项目)
+  
+   npm install eslint --save-dev
+   
+  -根据需要安装语法规则和插件
+   
+   npm i -g eslint-config-airbnb
+   npm i -g eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
+
+3.创建配置文件
+
+  可以使用命令：eslint --init(类似npm init 来创建package.json一样)
+  
+  或者手动在项目根目录创建.eslintrc文件(windows环境下可以命名为.eslintrc.)
+  
+  三种配置方式
+   
+    1.在JS注释中嵌入配置信息/* global var1:false, var2:false */  指定global为只读的全局变量
+    
+    2.使用.js/.json/.yaml文件为整个目录配置
+    
+    3.直接在package.json文件里eslintConfig字段指定配置
+    
+      3："eslintConfig": {
+        "plugins": ["example"],
+        "env": {
+            "example/custom": true
+        }
+        }
+    
+      2：.eslintrc文件配置如下
+		  {
+		    "root:"true,
+		    "parser":"babel-eslint",
+		    "rules":{
+		       "simi":2
+		    },
+		    "env":{
+		     "brower":true,
+		     "node":true
+		    },
+		    "globals":{
+		      "var1":false,
+		      "var2":true
+		    },
+		    "extends":"eslint:recommended"
+		  }
+		  extends属性表示开启eslint默认的规则 一般都要开启
+		  
+		  simi指定错误等级，0关闭 1警告 2错误
+		  
+		  parser是为eslint指定解析器 默认是esprima
+		  
+		  env字段表述运行支持环境
+		  
+		  globals指定只读的全局变量var1,可读写的全局变量var2
+
+
+4.配置优先级
+
+  1.行内配置  (注释中的配置)
+  
+  2.命令行选项 --global  --env -c
+  
+  3.项目级配置
+  
+    1>与要检测的项目在同一目录下的.eslintrc.*文件
+    2>继续在父级目录寻找.eslintrc.*文件，直到发现有一个"root:true"的配置
+    
+    
+5.插件EditorConfig
+
+  EditorConfig插件可以控制编写代码时的风格，
+  以让其容易通过eslint的检查
+  
+  在项目根目录下新建文件.editorconfig
+  
+  #停止查找的动作
+  root=true
+  #匹配所有字符
+  [*]
+	#缩进风格：空格
+	indent_style = space
+	#缩进大小2
+	indent_size = 2
+	#换行符lf
+	end_of_line = lf
+	#字符集utf-8
+	charset = utf-8
+	#行尾允许空格
+	trim_trailing_whitespace = true
+	#结尾总是插入新的一行
+	insert_final_newline = true
