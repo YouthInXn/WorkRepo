@@ -1,0 +1,320 @@
+Node.js
+
+Node第一次把JavaScript带入到后端服务器开发
+最大的优势是借助JavaScript天生的事件驱动机制加V8高性能引擎，
+使编写高性能Web服务轻而易举。
+JavaScript语言本身是完善的函数式语言，在前端开发时，
+开发人员往往写得比较随意，让人感觉JavaScript就是个“玩具语言”。
+但是，在Node环境下，通过模块化的JavaScript代码，加上函数式编程，
+并且无需考虑浏览器兼容性问题，直接使用最新的ECMAScript 6标准，
+可以完全满足工程上的需求。
+
+1.Node.js安装
+
+  在官网下载压缩包，解压之后将安装目录配置至Path
+  在cmd下执行node -v显示版本信息则安装成功
+
+  再次输入node则进入与Node.js的交互环境
+  Ctrl+C连续按两次退出交互
+
+2.npm
+
+  npm是Node.js的包管理工具(Package Manager)
+  可以通过命令安装其他JS脚本库，不管该脚本在哪，
+  直接通过npm安装就可以使用，而且nmp自动解析
+  依赖关系并管理依包
+   
+  安装个淘宝镜像
+  npm install -g cnpm --registry=https://registry.npm.taobao.org
+
+3.入门程序
+
+  写一个Hello.js 内容
+  'use strict' //使用严格模式
+  console.log("Hello!");//打印输出
+  在命令行模式下(注意区分Node交互模式)输入命令node Hello.js
+
+  设置Node使用严格模式
+  node --use_strict Hello.js
+
+4.模块
+
+  为了维护代码，将函数分组，放到不同的文件中
+  在Node环境中，一个.js文件就是一个模块
+  模块的名字就是文件名(去掉.js后缀)
+
+  在模块中对外输出变量:
+  在A模块末尾加上module.exports=sayHi(函数名);
+  输出的变量可以是任意对象、函数、数组等
+
+  在模块中引入其他变量:
+  在B模块中导入:var sayHi = require("./sayHi");
+  require中写的是相对路径 ./表示在同一目录下
+
+  在A/B模块中都生命了全局变量但不冲突(
+    因为Node在加载时将JS代码包装在了一个函数中，
+    所以全局变量互相不冲突
+  )
+  这种模块加载机制被称为CommonJS规范
+
+  模块导出/入Node实际是这样做的:
+
+   // 准备module对象:
+   var module = {
+    id: 'hello',
+    exports: {}
+   };
+   var load = function (module) {
+    // 读取的hello.js代码:
+    function greet(name) {
+        console.log('Hello, ' + name + '!');
+    }
+    //所以在代码中module对象可以直接调用
+    module.exports = greet;
+    // hello.js代码结束
+    return module.exports;
+   };
+   var exported = load(module);
+   // 保存module:
+   save(module, exported);
+   //交由Node保存 通过require("相对路径")获取对应的module
+   //将module中保存的exported返回
+
+   在准备module对象的时候
+   exports默认初始化为{} 你可以往里面加东西
+   var module = {
+    id: 'hello',
+    exports: {}
+   };
+
+   方式1:(module.)exports.hello=sayHi;
+
+   方式2:module.exports={
+      	   sayHi:sayHi,
+      	   hi:hi
+    		 };
+   直接给exports赋值是无效的exoprots={hello:hello};
+   因为module是load函数中的一个参数，必须显式调用给其赋值
+   若要输出函数/数组，则只能用第二种方式
+   Tips：只需要记住第二种方式即可
+
+   1.基本模块
+
+     浏览器中的Window对象，node中:global
+
+     process对象代表当前Node.js的进程
+     - process.nextTick(function(){});
+       在下一次时间响应中执行代码
+     - process.on(exit,function(){ });
+       在程序即将退出时执行代码
+
+     判断JS环境
+     if(typeof(window)==='undefined'){
+         console.log("node.js");
+     }else{
+         console.log("browser");
+     }
+
+   2.内置模块
+
+     -fs模块(文件读写模块)
+     
+			     a.读取文件
+			      异步读取文件 不排队等待IO结束
+			      var fs = require('fs');
+			      fs.readFile("sample.txt","utf-8",function(err,data){
+			        //Node标准的回调函数，err代表错误对象，正确执行时为null
+			        //data为读取到的字符串string结果
+			        if(!err===null){
+								//出错
+			        }else{
+			          //正常执行
+			        }
+			      });
+			      读取图片文件
+			      var buffer = fs.readFile("sample.img",function(err,data){});
+			      返回一个Buffer对象 
+			      --->Buffer-->String
+			          var text = buffer.toString("UTF-8");
+			      --->String-->Buffer
+			          var buffer = Buffer.from(text,"UTF-8"); 
+			      
+			      同步读取文件
+			      try{
+			        var data = fs.readFileSync("sample.txt","UTF-8");
+			        console.log(data);
+			      }catch(err){
+			        console.log(err);
+			      }
+			      
+			     b.写文件
+			      异步写文件
+			       var fs = require("fs");
+			       //如果写入的数据是data则默认是UTF-8
+			       var data = "Hello Node.js";
+			       fs.writeFile("sample.txt",data,function(err){...});
+			      同步写文件
+			       类似读取文件
+			        fs.writeFileSync("sample.txt",data);
+			     
+			     获取文件的大小、修改时间、创建时间等信息  
+			     fs.stat("sample.txt",function(err,stat){...}); 
+			     fs.statSync();
+			     fs.size; fs.mtime;fs.birthtime;fs.isFile();fs.isDirectory();
+			    
+			    因为JS只有一个执行线程，因此必须使用异步代码
+    
+   -stream模块(流) 
+    
+			    读取文件：
+			    var fs = require('fs');
+			    打开一个文件输入流
+			    var stream = fs.createReadStream("sample.txt","UTF-8");
+			    响应流的不同事件
+			    data事件：表示已经开始读取(content表示流读取的内容)
+			    stream.on("data",function(content){});
+			    end事件：表示读取完成
+			    stream.on('end',function(){});
+			    error事件：表示出错
+			    stream.on('error',function(){});
+			    
+			    写入文件：
+			    var stream = createWriteStream("Simple.txt","UFTF-8");
+			    stream.write("使用stream写入的数据..\n");
+			    stream.write("END");
+			    stream.end();
+			    
+			    pipe(); 复制文件
+			    var outputstream = fs.createReadStream("sample.txt","UTF-8");
+			    var inputstream = createWriteStream("sample.txt","UTF-8");
+			    outputstream.pipe(inputstream);
+			    将读取的数据通过流管道传给输入流对象
+    
+   -http模块:
+			    request请求对象
+			     request.method :获取请求方式
+			     request.url :获取请求路径
+			     
+			    response响应对象
+			     response.writeHead(200,{'ContentType':'text/html'}); 写入响应消息头
+			     response.end("<h1>Hello</h1>");  写入响应对象
+ 
+   -url模块: 
+			     var url = require('url');
+			     var url = url.parse(url); 解析url为urlJS对象 
+			     url.pathname/.query/.href/.path 一般用来解析请求路径，获取其中需要的字段
+   -path模块:
+			    用来处理本地目录
+			    var path = require('path');
+			    var a = path.resolve("."); 解析当前目录 d://
+			    var b ='project'; var filename='hello.html';
+			    path.join(a,b,'hello.html'); --> d://project/hello.html
+    
+  -crypto:提供通用的加密和哈希算法
+			    var crypro=require('crypto');
+			    var hash = crypto.creatHash("md5");
+			    hash.update("");
+			    hash.digest("");
+    
+5.package.json文件
+参考：http://javascript.ruanyifeng.com/nodejs/packagejson.html
+可以使用npm init自动生成
+npm install 命令根据这个文件自动下载所需模块
+		   
+      -scripts字段 "scripts":{"start":"node hello.js"}
+      
+		  	指定了npm命令行的缩写
+		  	
+	  -dependencies字段：指定了项目 运行 所依赖的模块
+	  
+	  -devDependencies字段：指定了项目 开发 所需要的模块
+		  	{
+		     "devDependencies": {
+		     //版本号的写法说明：a.指定版本 1.2.2 b.~1.2.2表示安装1.2.x的最新 
+		     //                              c.^1.2.2 表示安装1.x.x以上  d.latest 最新版本
+		     "browserify": "~13.0.0",
+		     "karma-browserify": "~5.0.1"
+		     }
+		    }
+		    如果模块不在package.json中可以单独安装
+		    npm install babel-cli --save-dev 
+		    --save:表示将该模块写入到dependencies属性中
+		    --save-dev:表示将该模块写入到devdependencies中
+	
+	 -main字段
+      指定了加载的入口文件，require('moduleName')就会加载这个文件。
+      这个字段的默认值是模块根目录下面的index.js。
+      
+     -style字段
+      制定.css文件的路径
+   补充：
+      
+   1.从cnpm install --g --registry=https://registry.npm.taobao.org引发的思考
+   
+   	--registry参数的作用
+   	
+   	npm模块仓库提供了一个查询服务，叫做registry,以npmjs.org为例，它的查询网址是：https://registry.npmjs.org/
+   	
+   	该网址后跟上模块名称，就能得到一个JSON对象，看到该模块所有的版本信息。
+   	
+   	比如：https://registry.npmjs.org/react/v0.14.6就能得到React的对应版本
+   	
+   	返回的JSON对象中有dist.tarball属性，是该版本压缩包的网址。
+   	dist: {
+   	  shasum: '2a57c2cf8747b483759ad8de0fa47fb0c5cf5c6a',
+   	  tarball: 'http://registry.npmjs.org/react/-/react-0.14.6.tgz' 
+   	},
+   	
+   	到这个网址下载压缩包在本地解压就得到该模块的源码。
+   	
+   	npm install和 npm updata都是通过这种方式去安装模块的。
+   	
+   2.缓存目录
+   
+   	从registry下载到压缩包之后，都会缓存到本地目录。
+   	
+   	默认是在用户主目录下的.npm目录中。
+   	
+   	可以通过npm config ls 查看
+   	
+   		-->设置全局安装目录和缓存目录
+   		
+   		缓存目录：通过 npm config set cache "url"来设置缓存目录的路径，此后所有的缓存将放在该目录下 
+   		
+   		全局安装目录：配置NODE_PATH为该目录路径， 执行 npm config set prefix "url"
+   	
+   	缓存目录的结构是
+   	
+   	~/.npm/react/react/0.14.6/
+   	~/.npm/react/react/0.14.6/package.tgz
+   	~/.npm/react/react/0.14.6/package/
+   	~/.npm/react/react/0.14.6/package/package.json
+   	
+   	此外还会生成registry.npmjs.org/react/.cache.json
+   	
+   	这个文件保存的是，所有版本的信息，以及该模块最近修改的时间
+   	
+   	这对于某些操作（npm search/npm view）npm会查看该文件，判断是否需要从远程仓库获取内容
+   	
+   	清空命令：npm cache clean
+   	
+   3.模块的安装过程
+   
+   	1.执行npm install 
+   	
+   	2.npm 向registry发送查询服务，构建查询网址，获取压缩包
+   	
+   	3.下载压缩包放在.npm(或者自定义的目录)下
+   	
+   	4.解压压缩包到当前项目的node_modules目录下
+   	
+   	也就是说模块安装后本地其实有两份。.npm的压缩包和当前项目的node_modules目录下的解压后的代码
+   	
+   	问题：npm install 只会检查当前项目的node_modules目录。就算缓存中有 也会重新安装。极大的影响了速度。
+   	
+   	为了解决这些问题，npm 提供了一个--cache-min参数，用于从缓存目录安装模块。
+   
+   	--cache-min参数指定一个时间（单位为分钟），只有超过这个时间的模块，才会从 registry 下载。
+   	
+   	npm install --cache-min 9999999 <package-name> // 指定所有模块从缓存获取
+   	
