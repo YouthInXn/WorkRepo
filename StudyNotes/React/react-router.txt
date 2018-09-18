@@ -51,5 +51,29 @@
 	history是一个JavaScript库，可在JavaScript运行的任何地方轻松管理会话历史记录
 	
 	
+--> 焕亮哥分享笔记
+
+	1.history
+	
+	2.location
+	
+	3.location.hash:是一个可读可写的字符串  url中的#后的部分 不会发送到服务器, 可实现页面快速定位
+	
+	4.监听hash变化事件： window.addEvenetListener('hashchange', () => {})
+	
+	5.react-Router常用组件
+	
+		Router: history
+		Route:
+		IndexRoute
+		Link: to=""  = hashHistory.push()  两种方式 实现跳转
+		
+	6.路由定义的两种方式：JSX / JSON对象传给Router的 routes属性
+	
+	7.require.enture()  getComponent()
+	
+	8.wenpack的代码分离思想
+	
+	
 	
 	
