@@ -1,4 +1,4 @@
-webpack
+webpack  		https://webpack.docschina.org
 
 I.概念
 
@@ -39,5 +39,59 @@ I.概念
 			
 			想要使用一个插件，你只需要 require() 它，然后把它添加到 plugins 数组中。
 			
-
+	3.具体概念
+	
+		
+		a.entry
+		
+			单个入口写法：module.exports = { entry:'./src/index.js' } //适用于单个入口起点的应用
 			
+			对象语法：module.exports = { entry:{
+				pageOne:'./src/pageOne.js',
+				pageTwo:'./src/pageTwo.js',
+				pageThree:'./src/pageThree.js'
+			} }      //高度可扩展性
+
+		b.output
+			
+			最基础的配置 
+			
+				module.exports = {
+					output:{
+						filename:'bundle.js',
+						path:'/home/src/dist'
+					}
+				}
+				
+			多个入口配置
+			
+				module.exports = {
+					output: {
+						filename:[name].js,
+						path:__dirname + './dist'
+					}
+				}  //name 是input中配置的文件名pageOne/pageTwo等，__dirname是...???
+				
+		c.mode
+		
+			mode选项告知webpack启用对应的优化插件
+			
+			mode:'devlopment' //开发模式 process.env.NODE_ENV 的值设为 development
+			
+			mode:'production' //默认值， process.env.NODE_ENV 的值设为 production
+			
+			mode:'none'       //不启用优化插件
+			
+		d.loader
+			
+			用于对源代码进行转换
+			
+			npm安装对应的loader插件，并且在webpack中配置
+			
+			module.exports = {
+				module:{
+					rules:[
+						{test:/\.css$/, use:'css-loader'}  // 匹配.css文件，使用css-loader
+					]
+				}
+			}
