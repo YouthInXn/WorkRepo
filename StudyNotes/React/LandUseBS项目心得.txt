@@ -105,11 +105,149 @@
 			
 			补充：后来发现其实问题根源在于当你切换其他组件时，状态会被重新加载，导致定了多个定时器。
 			
-			if (nextProps === this.props) {
-				return
+			代码：
+			
+			componentWillReceiveProps (nextProps) {
+				if (nextProps.msg === '') {
+				  return
+				}
+				if (nextProps.loading) {
+				  this.setState({ visible:nextProps.loading })
+				} else {
+				  if (this.props.loading === nextProps.loading) {
+					return
+				  }
+				  setTimeout(() => {
+					this.setState({ visible:nextProps.loading })
+				  }, 1000)
+				}
 			}
 			
-			加上这样一句判断就可以解决。
-			
 	c.扩展：loading组件实现为一个可复用的对象，而不是一个可复用的组件
+	
+3.OPTION请求
+
+	a.问题
+	
+		对接iportal上的POST接口时，在接口模拟上可以访问，在项目中，只会发送一个OPTION请求返回200，然后结束。
+		
+	b.解决
+	
+		iPortal端检查Access-Control-Request-Headers字段以后，确认允许跨源请求做出了200状态码回应，但是在
+		
+		response消息头中丢失了字段Access-Control-Allow-Headers:content-type
+		
+		导致浏览器报错
+		
+		Request header field Content-Type is not allowed by Access-Control-Allow-Headers in preflight response.
+	
+	c.学习
+	
+		1.什么是跨域？ 
+		
+		   默认AJAX会遵守同源策略，JS脚本只能访问相同协议/相同主机名/相同端口的资源（http://localhost:3000），如果
+		   
+		   要突破这个限制，那就是所谓的跨域。此时需要遵守CORS（Cross-Origin Resource Share）机制。
+		   
+		   跨域的三种解决方案：
+		   
+		   1.JSONP：HTML中的script标签，就是使用这种模式，GET请求
+
+		   2.代理：调用同源接口去访问跨域资源 
+		   
+		   3.SERVER端支持CORS
+		   
+		2.什么是CORS（跨域资源共享）？
+		
+			CORS是一个W3C标准，是一种使用额外HTTP标头来让目前浏览网站的useragent
+			能获得访问不同来源（网域）服务器特定资源之权限的机制。当useragent
+			请求一个不是目前文件来源——来自于不同网域（domain）、通信协定（protocol）
+			或通信端口（port）的资源时，会建立一个跨来源HTTP请求（cross-origin HTTP request）。
+			
+			普通的AJAXapi都遵守同源策略，若访问跨域资源，则必须使用CORS消息头。
+			当用fetch/XMLHttpRequest等API进行跨站请求时，会默认使用CORS消息头。
+			
+			CORS需要浏览器和服务端同时支持。当前浏览器端基本都支持，IE10以上支持。
+			
+			CORS通信过程不需要用户参与。对于开发者而言，代码也是完全一样，浏览器一旦发现HTTP请求
+			跨域，则会自动附加一些头信息，当为复杂跨域问题时，还会多发出一次请求（OPTION），但是用户不会感知。
+			
+		3.两种跨域请求
+		
+			1.简单跨域请求
+			
+				同时满足以下条件，则为简单请求（通常涉及到1,2）
+				
+					-请求方法是以下方法之一：GET/POST/PUT
+				
+					-头信息不超过以下几种字段：Accept | Accept-Language | Content-Language | Last-Event-ID
+				
+						Conten-Type:只限于三个值：application/x-www-form-urlencoded、multipart/form-data、text/plain
+						
+						注意：这里其实是限制传递的数据类型，第一个为字符串，第二个为表单，第三个为文本，
+						
+							若为这三种格式的数据，则都是简单跨域请求，所以归根结底，区分简单和复杂请求
+							
+							是传递数据的类型。
+				
+					-请求中没有 ReadableStream 类型的内容被用于上传。
+				
+					-没有事件监听器被注册到任何用来发出请求的 XMLHttpRequestUpload 上（经由 XMLHttpRequest.upload 
+					方法取得）上。
+				 
+				浏览器发现自己发送的是简单请求，则只会发送一次HTTP请求。
+				
+				相对非跨域请求，浏览器自动会在请求头中额外添加Origin字段
+				
+				如果Origin指定的域名在服务端的许可范围内，服务端返回的响应会多出以下字段
+				
+				Access-Control-Allow-Origin: http://api.bob.com （*表示开放服务器）
+				Access-Control-Allow-Credentials: true
+				Access-Control-Expose-Headers: FooBar
+				Content-Type: application/xml
+				
+				如果Origin指定的域名不在服务端的许可范围内，则返回一个正常的HTTP响应。
+				
+				然后浏览器发现response的头信息中没有Access-Control-Allow-Origin字段，则会抛出错误。
+				
+				且该错误不能被状态码识别。
+				
+			2.复杂跨域请求(预检请求)
+				
+				不满足简单跨域请求的条件，则为复杂跨域请求。
+				
+				复杂的CORS请求，在正式通信之前，增加一次HTTP请求，称为预检请求：Preflight
+				
+				预检请求会先使用HTTP的OPTIONS方法请求另外一个域名资源，确认后续实际是否能安全送出。
+				
+				服务端收到预检请求之后，检查Headers中的Origin/Access-Control-Request-Method/Access-Control-Request-Headers
+				
+				字段以后，确认允许跨源请求，就可以做出回应（200），若否定了该请求，返回正常的HTTP回应，但是没有
+				
+				任何的CORS字段，此时浏览器会认为服务端不同意预检请求，抛出错误，被XMLHttpRequest的回调onError捕获。
+				
+				一旦预检通过，每次CORS请求都会变成简单跨域请求。
+				
+				Access-Control-Max-Age用来指定本次预检请求的有效时间，86400是24小时也就是一天。
+				
+				
+			3.CORS字段
+			
+				参考阮老师的网络日志：http://www.ruanyifeng.com/blog/2016/04/cors.html
+				
+				本笔记更多参考于：https://blog.csdn.net/qq_15437667/article/details/78841335?utm_source=blogxgwz2
+				
+				
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	
 	

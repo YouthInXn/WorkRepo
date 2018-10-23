@@ -97,6 +97,9 @@ Redux 是 JavaScript 状态容器，提供可预测化的状态管理。
 	   ->mapDispatchToProps(dispatch,ownProps)
 	     允许我们将action作为props绑定到组件中,分发action
 		 
+3.Redux高级技巧
+
+	改天组织
 
 		 
 Redux-thunk
