@@ -42,7 +42,13 @@ ES6 入门
 	        "script":{
 	          "build":"babel src -d lib"//加入这个脚本就可以执行npm run build
 	        }
-	        
+			
+	        4.常用babel插件
+			babel-import-plugins:按需加载antd的CSS样式文件，它并不是自动导入，还是需要在项目入口文件
+			中导入整个的样式表，该插件会自动按需加载组件样式，在.babelrc中这样配置
+			"plugins": [
+				["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]
+			  ]
 			
 	2.let和const
 

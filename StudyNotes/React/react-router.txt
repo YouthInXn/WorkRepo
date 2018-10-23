@@ -50,6 +50,60 @@
 	
 	history是一个JavaScript库，可在JavaScript运行的任何地方轻松管理会话历史记录
 	
+-->React Router传递参数的三种方式
+
+	1.通过路由匹配传递
+	
+		a.路由定义：<Route path='user/:id' component={User} />
+		
+		b.使用：<Link to='user/123' />  或者 hashHistory.push('user/123')
+		
+		c.参数获取：在User组件内部this.props.params.id
+		
+	2.通过query传递（明文传递，会显示在url中）
+	
+		a.路由定义：<Route path='user' component={User} />
+		
+		b.使用：<Link to={ pathname:'user', query:{id:134} } /> 或者 hashHistory.push({ pathname:'user', query:{id:123} })
+	
+		c.参数获取：this.props.location.query
+		
+	3.通过state传递（不会显示在url中，加密传输）
+	
+		a.路由定义：<Route path='user' component={User} />
+		
+		b.使用：<Link to={ pathname:'user', state:{id:134} } /> 或者 hashHistory.push({ pathname:'user', query:{id:134} })
+		
+		c.参数获取：this.props.location.state
+		
+		在使用这种方式传递参数时你会发现 URL 中多了一个类似_key=s1gvrm的query，这个 _key就是为 react-router 内部在
+		
+		sessionStorage 中读取 state 对象所提供的。（暂时不太理解）
+		
+		
+--> 焕亮哥分享笔记
+
+	1.history
+	
+	2.location
+	
+	3.location.hash:是一个可读可写的字符串  url中的#后的部分 不会发送到服务器, 可实现页面快速定位
+	
+	4.监听hash变化事件： window.addEvenetListener('hashchange', () => {})
+	
+	5.react-Router常用组件
+	
+		Router: history
+		Route:
+		IndexRoute
+		Link: to=""  = hashHistory.push()  两种方式 实现跳转
+		
+	6.路由定义的两种方式：JSX / JSON对象传给Router的 routes属性
+	
+	7.require.enture()  getComponent()
+	
+	8.wenpack的代码分离思想
+	
 	
 	
 	
