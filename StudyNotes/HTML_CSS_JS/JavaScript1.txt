@@ -238,7 +238,7 @@
                        -childNodes:   找子节点  返回一个数组 包含了空格、换行
                        -getElementsByTagName("li");  直接找li的孩子 返回一个数组
                      -根据name属性查询节点
-                      -document.getElementsByName("sex"); 返回name属性为sex的元素数组                        常用在表单中。                     
+                      -document.getElementsByName("sex"); 返回name属性为sex的元素数组常用在表单中。                     
                   3）增加、删除节点
                      -增加节点
                    创建新节点：var a =document.creatElement("input") 一个游离态新节点
@@ -334,3 +334,73 @@
                    默认存在
                    取消：1.event.stopPropagation();       -->IE浏览器
                          2.event.cancelBubble = true;    -->其他浏览器
+						 
+
+	--> JS动画
+	
+		1.运动框架实现思路
+		
+		  -速度
+		  -缓冲运动
+		  -多物体运动
+		  -任意值变化
+		  -链式运动
+		  -同时运动
+		  
+		2.获取style
+		
+			style分为三种：1.内联样式 写在元素的style属性中
+			
+			                   获取：const div = document.getElementById('root')
+							         div.style.fontSize // 16px
+									 如果该元素没有定义内联样式，则element.style获取到的是空对象
+						
+						   2.外联样式 写在style标签中
+						   
+						   3.外部样式 写在外部.css文件中 <link href="XX.css" type='text/css' rel='stylesheet'/>
+						   
+						      获取：外联、外部样式都可以通过window.getComputedStyle(element,伪类)
+									IE浏览器不支持该方法，在IE中可以使用element.currentStyle
+							  // 兼容的获取CSS样式的方法 
+							  function getStyle(obj,attr) {
+								if(obj.currentStyle)
+								{
+									return obj.currentStyle[attr];
+								}else{
+									return getComputedStyle(obj,false)[attr];
+								}
+							  }
+							  外联样式获取还可通过document.styleSheets 返回link的CSS文件数组
+							  
+						   -->  该方法获取到的style是只读的，但是通过.style属性获取到的是可以修改的
+						         div.style.fontSize = '10px'
+								 
+	    3.设置style
+		
+		    1.element.style.setProperty('width', '700px') // 其实就是给改元素设置内联样式，因为element.style获取到的是内联样式
+		    
+			2.element.style.cssText='width:700px'
+			
+			3.element.style.width = '700px'
+			
+			4.element.setAttribute('style', 'width:700px')
+			
+			element.style获取到的是一个可读可写的CSSStyle对象，直接修改该元素的style属性便可实现效果，下面是其他的方式
+			
+			1.设置类名，让其指向css文件中另外一个style
+			
+			  -element.className = 'mouseIn'
+			  -element.setAttribute('class', 'mouseIn')
+			  
+			2.设置元素指向另外一个文件来设置style
+			
+			  -element.setAttribute('href','./XX.css')
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+	
+	     
