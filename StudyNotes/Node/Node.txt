@@ -206,7 +206,12 @@ JavaScript语言本身是完善的函数式语言，在前端开发时，
    -path模块:
 			    用来处理本地目录
 			    var path = require('path');
-			    var a = path.resolve("."); 解析当前目录 d://
+			    var a = path.resolve("."); 解析当前目录 d://  具体查看Node.js官方文档
+				
+					-->疑惑解决：path.resolve('/foo/bar','/temp/file') 返回/temp/file  可以理解为从左到右执行cd命令
+					
+						即cd /foo/bar  cd /temp/file
+					
 			    var b ='project'; var filename='hello.html';
 			    path.join(a,b,'hello.html'); --> d://project/hello.html
     
