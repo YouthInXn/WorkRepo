@@ -97,9 +97,104 @@ Redux 是 JavaScript 状态容器，提供可预测化的状态管理。
 	   ->mapDispatchToProps(dispatch,ownProps)
 	     允许我们将action作为props绑定到组件中,分发action
 		 
-3.Redux高级技巧
+3.Redux高级
 
-	改天组织
+	普通的React组件中数据流只能是自上而下，唯一的数据回溯方式是子组件的onClick触发父组件传递给它的事件属性。
+	
+	为了面临更好的state管理，需要一个库来管理state，将state集中放在组件顶层，这就是Redux
+	
+	-Redux的Action发送是全局的，所有的Reducer都可以捕捉到并判断是否与自己有关，相关就做出一些状态处理。
+	
+	一般不会把两个库单独拿来使用，还有一个库叫做react-redux，提供了Provider组件和Connect函数
+	
+	-Provider是一个普通组件，可以作为顶层App的分发点，只需要一个属性store，它可以将state分发给所有被connect的组件。
+	
+	-Connect函数接收两个参数
+	
+		-mapStateToProps(state,ownProps):将状态映射到组件
+		
+		-mapDispatchToProps(dispatch,ownProps):若不声明该参数，则Redux会简单的把dispatch函数传递给被connect的组件
+		
+			-之前一直疑惑的问题：下面这两种写法有什么区别？
+			
+				-const mapDispatchToProps = { getData } // getData是获取数据的异步action，是一个中间件。
+				
+				-const mapDispatchToProps = (dispatch) => {
+					return {
+						getData:(...args) => dispatch(getData(...args))
+					}
+				}
+				
+				在刚学习完中间件的时候，知道了dispatch可以接受一个函数作为参数，因此在我的理解下
+				
+				中间件必须再次被dispatch才可以触发，才能正常的将dispatch作为参数传递给中间件返回的函数。
+				
+				因此第二种写法看起来通俗易懂。当调用组件的getData属性时，会调用一个函数，该函数内部dispatch
+				
+				一个中间件，并将dispatch作为参数传递给该函数，得以正常执行。
+				
+				但是第一种写法也是正确的，为什么呢？
+				
+					--> redux辅助函数:bindActionCreators(actionCreators, dispatch)
+				
+					该函数第一个参数是一个创建antion的集合，比如你有一个action.js里面是一堆actionCreator,
+				
+					则可以这样使用:
+				
+					import * as actionCreators from '../action.js'
+				
+						const mapDispatchToProps = () => { return bindActionCreators({ getData },dispatch) }
+				
+					该函数会自动将每个action用dispatch包起来调用。上面的写法等同于第二种写法
+				
+				如果将mapDispatchToProps定义为一个对象，这个对象对应的value必须是actionCreators，这样redux会自动
+				
+				将该对象作为bindActionCreators的第一个参数，也就相当于隐式地调用了dispatch函数。
+				
+	Reducer的拆分与合并
+	
+		一个应用只有一个Reducer函数，这个函数是传递给CreateStore的第一个参数
+		
+			reducer的几个要点：
+			
+				1.reducer第一次调用时，state是undefined,因此必须设置初始值
+				
+				2.reducer的参数是原先的state,和action
+				
+				3.不要更改state本身的内容，使用Object.assign()创建新的对象返回
+				
+				4.如果没有什么更改，必须返回原先的state
+				
+		Reducer的拆分可以按照状态树的结构或者应用的架构拆分为slice reducers 和 root reducer
+		
+		rootReducer：一般作为createStore的第一个参数
+		
+		sliceReducers:一般作为combineReducers的参数
+		
+		caseReducer:匹配到Action的Type下的某一种情况的处理函数
+		
+		可复用的工具函数，比如reducerCreators(initialState,handler) 用来匹配到对应的caseReducers
+		
+		combineReducers工具函数可以把每个切片Reducer组合起来，形成顶层的reducers。
+		
+		另外combinReducers只是一个语法糖，你完全可以自己去实现顶层reducer
+		
+		你可以在任何级别的Reducer下使用combineReducers,你需要根据当前级别的state去定义切片reducers和caseReducers
+		
+		每一个切片reducers更新各自切片的state数据，但是当复杂情况，你可以通过以下两种思路去共享切片数据：
+		
+			1.将全部状态显式传递给其他切片reducer(传参)
+			
+			2.action中获取全部状态传递给reducer(action)
+		
+		
+		大概的常用结构如下：
+								  | -- sliceReducers(切片reducer) -- 根据action.type处理的多个caseReducer
+								  |
+			combineReducer(顶层)--| -- sliceReducers(切片reducer) -- 根据action.type处理的多个caseReducer
+							      |
+								  | -- sliceReducers(切片reducer) -- 根据action.type处理的多个caseReducer
+				
 
 		 
 Redux-thunk
