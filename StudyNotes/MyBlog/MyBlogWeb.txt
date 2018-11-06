@@ -1,0 +1,111 @@
+
+ ---- 从零搭建自己的个人网站（前端篇） ----
+ 
+ https://github.com/brickspert/blog/issues/1
+ 
+ -项目环境搭建
+
+	1.首先新建目录，使用npm init命令初始化一个package.json文件(一路enter)
+	
+	2.git init初始化git本地仓库，并关联远程仓库，如下配置.gitignore，暂时先排除 node_modules  dist目录
+	
+		/node_modules
+		/dist
+		
+	3.建立public目录处理静态资源以及项目入口文件index.html和src目录
+	
+	4.安装webpack
+	
+		npm install --save-dev webpack@3.5.5
+		npm install --save-dev webpack-cli
+		
+		安装webpack loader
+		
+		npm install --save-dev style-loader  
+		npm install --save-dev css-loader	-用于打包解析样式文件
+		// npm install --save-dev babel-loader
+		
+		基础配置:在项目根目录下建立webpack.config.js
+		
+		const path = require('path')
+		
+		module.export = {
+			// webpack 入口
+			entry:{
+				main:path.resolve(__dirname, 'src/index.js')
+			},
+			// webpack 出口 打包的js文件输出位置
+			output:{
+				path:path.resolve(__dirname, 'dist'),
+				filename:'bundle.js'  // 打包后名称问题？？
+			}
+		}
+		
+	5.安装babel转码器
+	
+		npm install --save-dev babel-core  -babel转码核心包
+		npm install --save-dev babel-cli   -命令行转码工具，用于执行脚本
+		npm install --save-dev babel-loader-用于webpack转换es6
+		
+		安装转码规则集
+		
+		npm install --save-dev babel-preset-es2015   -将es6转换为普通JS(babel-preset-es2015)
+		npm install --save-dev babel-preset-react 	 -转换React的JSX语法
+		npm install --save-dev babel-preset-stage-0  -用于解析 ES7 提案
+		
+		配置
+		
+		在项目根目录下建立.babelrc（window下建.babelrc. 自动变为.babelrc）
+		{
+			"presets":["es2015", "react", "stage-0"],
+			"plugins":[]
+		}
+		
+		修改webpack.config.js 增加babel-loader
+		
+		// 配置匹配.js文件，包括的目录是src下，用babel-loader转换  cacheDirctory=true缓存加速
+		rules:[{
+			test:/\.js$/,
+			include:path.join(__dirname, 'src'),
+			use:'babel-loader?cacheDirctory=true'
+		}]
+		
+	6.React
+	
+		npm install --save react react-dom
+		
+	7.React-Router
+	
+	-eslint/editConfig工具
+	
+		全局安装eslint npm install -g eslint
+		
+		项目根目录下eslint --init  回答问题完成文件配置缩进选择2空格 换行默认建议删掉
+		
+		添加配置："parser": "babel-eslint",
+		
+		npm install --save-dev babel-eslint
+		
+		webStorm自带editConfig工具 配置参考React/eslint工具
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
