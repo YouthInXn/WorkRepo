@@ -22,7 +22,9 @@
 
 3.创建配置文件
 
-  可以使用命令：eslint --init(类似npm init 来创建package.json一样)
+  可以使用命令：eslint --init(类似npm init 来创建package.json一样) 
+  
+	建议用这种方式，可以回答问题来配置eslint
   
   或者手动在项目根目录创建.eslintrc文件(windows环境下可以命名为.eslintrc.)
   
@@ -86,6 +88,7 @@
   EditorConfig插件可以控制编写代码时的风格，
   以让其容易通过eslint的检查
   
+  当打开一个文件时，EditorConfig插件会在打开文件的目录和其每一级父目录查找.editorconfig文件，直到有一个配置文件root=true
   在项目根目录下新建文件.editorconfig
   
   #停止查找的动作
