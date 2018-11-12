@@ -192,13 +192,42 @@ JavaScript语言本身是完善的函数式语言，在前端开发时，
 			    将读取的数据通过流管道传给输入流对象
     
    -http模块:
-			    request请求对象
-			     request.method :获取请求方式
-			     request.url :获取请求路径
-			     
-			    response响应对象
-			     response.writeHead(200,{'ContentType':'text/html'}); 写入响应消息头
-			     response.end("<h1>Hello</h1>");  写入响应对象
+				非常重要的模块之一，前面有提到，NodeJS将JavaScript引入到后端编程，在我的个人博客中，必不可少的模块，
+				 
+				NodeJS认真学习，从此模块开始！
+				
+					Http模块主要用来搭建HTTP服务 最简单的搭建一个HTTP服务非常简单
+					
+					var http = require('Http')
+					// createServer方法返回http.Server对象
+					http.createServer(function (request, response) {...}).listen(8080,'127.0.0.1');
+					// 传进去的两个对象是请求和响应对象，可以根据该对象的API做一些处理
+					console.log('server is running ...');
+				
+				具体示例参考NodeServerDemo； 下面介绍Request和Response对象
+				
+				Request对象：
+				
+					属性：-url 请求的网址，可以被url.prase解析为对象
+					
+						  -method 请求的方式
+						  
+						  -headers 请求头信息
+						  
+					常用方法(具体查看NodeJS文档)：
+					
+						  -setEncoding("utf8") // 设置请求的编码
+						  
+						  -addListener('data'/'end', func(){}) // 给对象的事件添加监听
+						  
+				Respose对象：
+				
+					明天接着看
+					
+				Server()
+				
+				
+				
  
    -url模块: 
 			     var url = require('url');
