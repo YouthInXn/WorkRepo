@@ -222,10 +222,41 @@ JavaScript语言本身是完善的函数式语言，在前端开发时，
 						  
 				Respose对象：
 				
-					明天接着看
+					是可写流的实现类，因此文件服务器可以用readable.pipe(response)将流注入到响应对象中
 					
-				Server()
+					常用方法：
+					
+						-response.end() // 通知服务器响应发送完毕，每次响应都必须调用该方法
+						
+						-response.setHeader('Content-Type', 'text/html'); // 设置响应头，如果响应头字段存在，则覆盖
+						
+						-response.writeHeader(statusCode, [Message], [Headers]) // 用于操作响应头 
+						
+							-res.writeHead(200, { 'Content-Type': 'text/plain' });
+							
+						-response.write()
+					
+				Server
 				
+					事件：
+					
+						-request (request, response) => {} // 请求连接时触发
+						
+				
+					server对象最常用的方法: server.listen(PORT, HOST); 
+					
+					另外服务关闭自动重启的方法
+					
+					server.on('error', (e) => {
+					// 当端口被占用  也可以不加该条件，当服务器错误时，1S后重启
+						console.log(e.code);
+						setTimeout(() => {
+						  server.close();
+						  server.listen(PORT, HOST);
+						}, 1000);
+					})
+					
+					另外server.listening 属性为true表示服务正在监听中..
 				
 				
  
