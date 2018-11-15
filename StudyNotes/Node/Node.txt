@@ -162,6 +162,8 @@ JavaScript语言本身是完善的函数式语言，在前端开发时，
 			     fs.stat("sample.txt",function(err,stat){...}); 
 			     fs.statSync();
 			     fs.size; fs.mtime;fs.birthtime;fs.isFile();fs.isDirectory();
+				 
+				 判断文件是否存在 fs.access()
 			    
 			    因为JS只有一个执行线程，因此必须使用异步代码
     
@@ -383,4 +385,160 @@ npm install 命令根据这个文件自动下载所需模块
    	--cache-min参数指定一个时间（单位为分钟），只有超过这个时间的模块，才会从 registry 下载。
    	
    	npm install --cache-min 9999999 <package-name> // 指定所有模块从缓存获取
+	
+6. NodeJS Web 开发！！（来自廖雪峰的官方网站）
+
+	用Node.js开发Web服务器端，有几个显著的优势：
+
+	一是后端语言也是JavaScript，以前掌握了前端JavaScript的开发人员，现在可以同时编写后端代码；
+
+	二是前后端统一使用JavaScript，就没有切换语言的障碍了；
+
+	三是速度快，非常快！这得益于Node.js天生是异步的。
+	
+	
+	-KOA框架：
+	
+		KOA是Express基于NodeJS的下一代框架
+		
+		1.安装
+		
+			npm install --save koa@2.0.0
+			
+			node必须使用7.6以上的版本
+		
+		2.基本使用
+		
+			const Koa = require('koa');
+			const app = new Koa();
+			app.listen(3000);
+			
+			这样就启动了一个最简单的服务
+			
+			Koa提供了一个Context对象，包装了Request和Reponse对象，通过加工这个对象，可以控制返回给用户的内容
+			
+		3.路由
+		
+			1.原生路由 ：通过context.request.path来获取用户访问的路由
+			
+			2.使用koa-route模块
+			
+			const route = require('koa-route');
+			cont home = () => {...};
+			app.use(route.get('/', home)); // route.get()方法，传入路由路径，和处理函数
+		 
+			3.使用koa-static管理静态资源
+			
+			const serve = require('koa-static');
+			const main = serve(path); // serve是一个函数，参数传静态资源的路径，返回一个函数。
+			app.use(main);
+			
+		4.中间件
+		
+			1.概念理解
+		
+			const logger = (ctx) => {
+				console.log(`${new Date()}  ${ctx.request.method}  ${ctx.request.url}`);
+				ctx.response.body = 'Hello world';
+			};
+			
+			这样的一个函数就是中间件，一个输出日志的中间件。它在request和response中间实现某种功能。
+			
+			每个中间件接收两个参数，第一个参数是Context对象，第二个参数是next函数，只要调用next对象，就可以把执行权限交给下一个中间件。
+			
+			app.use()方法，就是用来加载中间件！！
+			
+			
+			2.中间件栈
+			
+				当存在多个中间件时，他们会形成一个栈结构，以先进后出的顺序执行。
+				
+				当按顺序执行中间件时，遇到next函数，就执行下一个中间件，直到最后一个中间件，再从里到外执行每一个中间件next后面的内容。
+				
+				如果某个中间件中没有next函数，则执行完该中间件向上依次执行其他中间件next后面的内容。
+				
+			3.异步中间件
+			
+				加上async 和 await实现异步中间件
+				
+			4.中间件的合成
+			
+				koa-compose模块可以将多个中间件合为一个。
+				
+				const midware = compose([ ... ]);
+				
+				一个中间件如果有多个任务要执行，可以拆分为多个小的中间件，再合成之后加载。 合成之后的这个中间件将是一个复杂的中间件！
+				
+		5.错误处理
+			
+			context.throw()方法可以抛出错误，可以传递一个错误代码作为参数。
+			
+			context.throw(500); 服务内部错误；
+			
+			另外一种抛出错误的方式:
+			
+				context.response.status = 404; // 等同于：context.throw(404);
+				
+			-处理错误的中间件
+			
+				可以让最外层的中间件，负责所有中间件的错误处理
+				
+				const handler = async (ctx, next) => {
+				  try {
+					await next();
+				  } catch (err) {
+					ctx.response.status = err.statusCode || err.status || 500;
+					ctx.response.body = {
+					  message: err.message
+					};
+				  }
+				};
+				
+			另外一种处理错误的方式：
+			
+				当触发错误时，Koa会触发一个error事件，监听该事件去处理错误！
+				
+				app.on('error', function () {});
+				
+				需要注意的是如果中间件中有try-catch捕获错误的话，监听error的函数将不会再被调用
+				
+				但是可以手动释放该错误，让其暴露给外部，触发Koa的error事件。
+				
+				context.app.emit();手动释放错误。
+					
+		6.web app的功能
+		
+			1.cookies  context.cookies; 可以读取cookies;
+			
+					   context.cookies.get('')  // 获取cookies中的某个字段
+					   
+					   context.cookies.set('key', value); // 修改cookies
+		
+					   // 可以测试查看cookies的结构
+					   
+			2.表单
+			
+				本质上，表单就是 POST 方法发送到服务器的键值对。
+				
+				koa-body模块可以从post请求的数据体中提取键值对。
+				
+				app.use(koaBody()); // 先加载koaBody模块，将数据提取为键值对
+				app.use(main);		// 该模块中的context对象的数据被处理为键值对
+				
+				这个模块还能处理文件上传。 具体参考阮一峰的个人网络日志！
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
    	
