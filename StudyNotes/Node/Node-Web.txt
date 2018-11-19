@@ -221,13 +221,21 @@ NodeJS Web 开发！！（来自廖雪峰的官方网站）
 			
 			使用sequelize框架之后，我们操作的都是JS对象，框架帮我们转换为数据库中的行
 			
-			具体学习可以参考Sequelize中文文档
+			具体学习可以参考Sequelize中文文档和廖雪峰的官方网站
 			
 			https://itbilu.com/nodejs/npm/VkYIaRPz-.html
 			
-			后续：1.使用sequelize创建表格、增删改查、入门知识等等
+			Sequelize使用基本步骤：
 			
-				  2.搭建model-sequelize工程结构，理解sequelize如何应用
+			1.根据表格建立模型
+			
+			2.查询数据：调用Model对象的findAll()等查询方法获取实例（数据对象）
+			
+			3.更新数据，就赋新值并调用数据对象的save方法
+			
+			4.删除数据，则调用对象的destroy方法
+			
+			5.插入数据，调用model的create(data)方法
 			
 		  
 	-前端MVC开发
@@ -236,6 +244,10 @@ NodeJS Web 开发！！（来自廖雪峰的官方网站）
 	-webSocket
 	
 		WebSocket是HTML5新增的协议，它的目的是在浏览器和服务器之间建立一个不受限的双向通信的通道，比如说，服务器可以在任意时刻发送消息给浏览器。
+		
+	-REST API
+	
+		明天继续
 		
 			
 			
