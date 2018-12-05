@@ -1,0 +1,16 @@
+{
+  "name": "modelsequelize",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fyj",
+  "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.16.0",
+    "mysql2": "^1.6.4",
+    "sequelize": "^3.33.0"
+  }
+}

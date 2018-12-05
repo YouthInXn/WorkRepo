@@ -1,0 +1,16 @@
+{
+  "name": "hellorest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "fyj",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^2.6.2",
+    "koa-body": "^4.0.4",
+    "koa-router": "^7.4.0"
+  }
+}

@@ -1,0 +1,38 @@
+
+
+	1.先贴官方学习网站
+	
+		https://vuejs.bootcss.com/v2/guide/
+		
+	2.什么是Vue?
+	
+		Vue是一个渐进式的JS框架，帮助用户创建可维护性更强、可测试性更强的JS代码库。类似的JS框架还有React,Angular(安哥拉~~~)
+		
+		渐进式表现在你完全可以非常容易的将Vue应用到你项目中的一部分。
+		
+	3.安装
+	
+	
+	4.基础
+	
+		最基础的HelloWorld：
+		
+			新建一个HTML文件
+			
+			<div id='app'>{{ message }}</div>
+			<!--引入Vue-->
+			<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+			<script type="text/javascript">
+				const app = new Vue({
+					el:'#app',
+					data:{
+						message:'Hello Vue!'
+					}
+				})
+			</script>
+			
+			一个HelloWorld就完成了。注意：脚本要在Body最后引入(？？？)
+			
+		剩下的基础学习完全可以在官方学习网站进行，写的非常浅显易懂，就不在这里记录了。
+		
+	4.核心

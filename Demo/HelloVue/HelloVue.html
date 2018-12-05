@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Hello Vue!</title>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <div id="app"><h2>{{ message }}</h2></div>
+        <div id="app-1">
+            <span v-bind:title="message">
+                Hover Here for a while !
+            </span>
+        </div>
+        <div id="app-2">
+            <p v-if="seen">你现在看到我啦！</p>
+        </div>
+        <div id="app-3">
+            <ol>
+                <li v-for="todo in todoList">{{ todo.text }}</li>
+            </ol>
+        </div>
+        <div id="app-4">
+            <h3>{{ message }}</h3>
+            <button v-on:click="reverseMsg">反转</button>
+        </div>
+        <div id="app-5">
+            <h3>输入：{{ userInput }}</h3>
+            <input v-model="userInput" >
+        </div>
+        <div id="app-6">
+            <h3>{{ message }}</h3>
+            <ol>
+                <!-- 将todo和key属性绑定到todo-item组件上 -->
+                <todo-item
+                    v-for="item in todoList"
+                    v-bind:todo="item"
+                    v-bind:key="item.id"
+                ></todo-item>
+            </ol>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script type="text/javascript">
+            /* 声明式渲染 Hello World */
+            const app = new Vue({
+                el:'#app',
+                data:{
+                    message:'Hello Vue!'
+                }
+            })
+            /* 初探指令 */
+            const app1 = new Vue({
+                el:'#app-1',
+                data:{
+                    message:`页面加载于${new Date().toLocaleString()}`
+                }
+            })
+            /* 条件与循环 */
+            const app2 = new Vue({
+                el:'#app-2',
+                data:{
+                    seen:true
+                }
+            })
+            const app3 = new Vue({
+                el:'#app-3',
+                data:{
+                    todoList:[
+                        { text:'Learn React' },
+                        { text:'Learn Vue' },
+                        { text:'Boom! MyBlog!' }
+                    ]
+                }
+            })
+            /* 处理用户输入 */
+            const app4 = new Vue({
+                el:'#app-4',
+                data:{
+                    message:'Hello Vue!'
+                },
+                methods:{
+                    reverseMsg:function () {
+                        /* Array.join('') 用于把数组中的元素放入一个字符串 */
+                        this.message = this.message.split('').reverse().join('')
+                    }
+                }
+            })
+            const app5 = new Vue({
+                el:'#app-5',
+                data:{
+                    userInput:'Hello Vue!'
+                }
+            })
+            /* 组件化 */
+            Vue.component('todo-item', {
+                props:['todo'],
+                template:'<li>{{ todo.text }}</li>'
+            })
+            const app6 = new Vue({
+                el:'#app-6',
+                data:{
+                    message:'这是用组件实现的ol列表！',
+                    todoList:[
+                        {id:1, text:'苹果' },
+                        {id:2, text:'橘子' },
+                        {id:3, text:'香蕉' }
+                    ]
+                }
+            })
+        </script>
+    </body>
+</html>
