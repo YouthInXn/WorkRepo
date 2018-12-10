@@ -67,7 +67,7 @@
 		rules:[{
 			test:/\.js$/,
 			include:path.join(__dirname, 'src'),
-			use:'babel-loader?cacheDirctory=true'
+			use:['babel-loader?cacheDirctory=true']
 		}]
 		
 	6.React
@@ -75,6 +75,13 @@
 		npm install --save react react-dom
 		
 	7.React-Router
+	
+		npm install --save react-router-dom (安装最新版，顺便学习一下)
+		
+		-react-router 和 react-router-dom的区别？
+		
+		在v4中，react-router导出核心组件和功能。 react-router-dom导出支持DOM的组件，如<Link>（呈现<a>）和<BrowserRouter>（与浏览器的window.history交互）。
+		react-router-dom会重新导出所有react-router的导出，因此您只需要在项目中从react-router-dom导入。
 	
 	-eslint/editConfig工具
 	
@@ -88,10 +95,169 @@
 		
 		webStorm自带editConfig工具 配置参考React/eslint工具
 		
+	8.静态文件服务器&&HMR
+	
+		安装webpack-dev-server
 		
+		npm install webpack-dev-server@2 --save-dev
+
+		webpack-dev-server 为你提供了一个简单的 web 服务器，并且能够实时重新加载(live reloading)。
 		
+		+   devServer: {
+		+     contentBase: './dist'
+		+   },
 		
+		基本配置如上：告诉webpack-dev-server,在localhost:8080下建立服务，访问./dist下的文件
 		
+		更多的配置请参考官网。
+		
+		--模板html文件配置
+		
+			安装 html-webpack-plugins
+			
+			npm install --save-dev html-webpack-plugins
+			
+			使用：
+			
+			const webpackHtmlPlugins = require('html-webpack-plugins')
+			module.exporse = {
+				plugins:[
+					new WebpackHtmlPlugins({
+						inject:true,
+						...
+					})
+				]
+			}
+			
+			title的设置要注意：启用自定义模板可以在html中直接设置，也可以在插件的options中，但是在html中要加入参数
+			
+			<title><%= htmlWebpackPlugin.options.title %></title>
+			
+			更多选项参考：https://github.com/jantimon/html-webpack-plugin#minification
+			
+		--热替换Hot Midule Replacement
+		
+			1.直接启用HMR
+			
+				-命令行
+				
+					package.json中增加修改命令如下
+			
+					webpack-dev-server --config webpack.dev.config.js --hot
+					
+					当模块更新的时候，通知index.js
+					
+					index.js中添加：
+					
+					if(module.hot) { module.hot.accept() }
+				
+				-webpack.config.js配置
+				
+					在devServer中加入：hot:true,
+					plugins:中加入：new webpack.HotModuleReplacementPlugin()
+					
+				这两种方式都可以启用HMR.但是不要同时配置，他们是互斥的。
+				
+				
+			2.通过NodeJS
+			
+				参考官网。。
+				
+		--支持React
+		
+			为了使热加载的时候保留当前的state配置此模块
+			
+			安装：npm install --save-dev react-hot-loader@next
+			
+			配置：
+			
+				.babelrc:
+				
+					{
+					  "presets": [
+						"es2015",
+						"react",
+						"stage-0"
+					  ],
+					  "plugins": [
+						"react-hot-loader/babel"
+					  ]
+					}
+					
+				webpack.dev.config.js入口增加react-hot-loader/patch
+		
+				修改入口文件
+				
+				/*初始化*/
+				renderWithHotReload(getRouter());
+
+				/*热更新*/
+				if (module.hot) {
+					module.hot.accept('./router/router', () => {
+						const getRouter = require('./router/router').default;
+						renderWithHotReload(getRouter());
+					});
+				}
+
+				function renderWithHotReload(RootElement) {
+					ReactDom.render(
+						<AppContainer>
+							{RootElement}
+						</AppContainer>,
+						document.getElementById('app')
+					)
+				}
+						
+		
+	9.集成Redux（加入项目结构思考）
+		
+		1.安装
+				
+			npm install --save redux  
+			npm install --save react-redux   (connect函数、bindActionCreators函数、 combineReducer函数等)
+			
+		2.实现一个Counter组件测试Redux / React-Redux
+		
+			在Router组件下新建Counter文件夹，并建立以下目录结构
+			
+			actions -- index.js
+			reducers -- reducers.js
+			components --counter.js	
+			containers --counterContainers.js
+			
+			redux是状态管理机，react-redux中的connect函数，将redux管理的store中的state映射到组件上
+		
+			具体的写法可以参照Redux中文网https://www.redux.org.cn/
+			
+			写好Counter组件之后
+			
+			-将该组件用react-redux中的connect()函数包装，将容器组件加到路由上
+			
+			-在根路由中加入react-redux提供的Provider组件将store传递给所有的子路由
+			
+			-在rootReducers使用redux提供的辅助函数中加入Counter的子reducers，注意隐式参数传递
+			
+		3.中间件redux-thunk
+		
+			中间件允许我们dispatch一个函数作为action
+			
+			安装：npm install --save redux-thunk
+			
+			import {createStore, applyMiddleware} from 'redux';
+			import thunkMiddleware from 'redux-thunk';
+			import combineReducers from './reducers.js';
+
+			let store = createStore(combineReducers, applyMiddleware(thunkMiddleware));
+
+			export default store;
+			
+			简单的说，中间件就是action在到达reducer，先经过中间件处理。我们之前知道reducer能处理的action只有这样的{type:xxx}，所以我们使用中间件来处理
+			函数形式的action，把他们转为标准的action给reducer。这是redux-thunk的作用。
+		
+		4.一些优化
+		
+			
+			
 		
 		
 		
