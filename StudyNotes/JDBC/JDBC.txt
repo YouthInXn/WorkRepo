@@ -1,0 +1,313 @@
+JDBC
+
+1.连接数据库步骤
+
+  a.加载驱动
+    Class.forName("com.mysql.jdbc.Driver");
+
+  -->Mysql:com.mysql.jdbc.Driver
+     Oracle:oracle.jdbc.driver.OracleDriver
+
+  b.创建连接
+
+    Connection conn = DriverManager.getConnection("1","2","3");
+
+    创建连接需要传入三个参数：
+
+    1.数据库的url
+      mysql:jdbc:mysql://服务器地址:端口号/dbname
+      Oracle:jdbc:Oracle:thin:@服务器地址:端口号:SID
+
+    2.账号
+
+    3.密码
+
+  c.创建statement
+
+     Statement state = conn.creatStatement();
+     String sql="";
+     state.executeQuery(sql);  传入查询   DML  -->返回的是ResultSet;
+     state.executeUpdate(sql); 传入增删改 DML  -->返回的是int;
+     state.execute(sql);       传入DDL         -->返回的是boolean;
+                               该方法可以执行任何Sql语句
+                               返回true说明执行的是查询语句，并返回
+                               了结果集，执行DDL成功之后都是false
+
+        -->DML（data manipulation language）：
+               它们是SELECT、UPDATE、INSERT、DELETE，就象它的名字一样，
+               这4条命令是用来对数据库里的数据进行操作的语言
+           DDL（data definition language）：
+                DDL比DML要多，主要的命令有CREATE、ALTER、DROP等，
+                DDL主要是用在定义或改变表（TABLE）的结构，数据类型，
+                表之间的链接和约束等初始化工作上，他们大多在建立表时使用
+           DCL（Data Control Language）：
+                是数据库控制功能。是用来设置或更改数据库用户或角色
+                权限的语句，包括（grant,deny,revoke等）语句。在默认
+                状态下，只有sysadmin,dbcreator,db_owner或db_securityadmin
+                等人员才有权力执行DCL
+  d.得到结果集
+
+    ResultSet rs = state.executeQuery();  //遍历
+    //ReusltSet默认是在第一行字段行，是无内容的，若要
+    //获取内容，需先执行一步rs.next();一般是先判断
+    //if(rs.next()){...}
+    while(rs.next()){
+    /*
+     *  关于结果集：
+     * getInt(),getString()里的参数都是字段名称；
+     *  若查看max(id)/min(id)/avg(sal)等，
+     *  则获取结果集应getInt('max(id)');
+     *  或者给字段名取一个别名来解决
+     */
+      int id = rs.getInt("empno");
+    }
+
+
+  e.关闭连接
+
+   conn.close();
+
+2.构建配置文档
+
+  a.写一个后缀为properties的文件  编辑写入
+  #驱动 这里是注释
+	driver=com.mysql.jdbc.Driver
+	#路径
+	url=jdbc:mysql://localhost:3306/study
+	#用户名
+	user=root
+	#密码
+	pwd=mysql
+
+	b.在java中创建Properties对象，调用load();方法加载配置文件
+
+	Properties prop = new Properties();
+
+	FileInputStream fis = new FileInputStream("文件路径");
+
+	prop.load(fis);
+
+	c.读取配置文件信息
+
+	prop.getProperty("key").trim();  -->根据key读取value 返回String trim()是String方法的去空格
+
+	常用读法： DButil用到配置文件
+
+	DButil.class.getLoader().getResourceAsStream("day01/properties");
+
+	d.关闭流
+
+	fis.close();
+
+3.导入外部jar包
+
+  当用到连接池时，需要导入jar包
+  commons-dbcp-1.4.jar
+  commons-pool-1.6.jar
+  connoms-connection.jar
+  a.复制到项目文件夹下
+  b.右键项目BuildPath第二个addjar
+  c.或者直接BuildPath添加外部jar包
+
+4.连接池技术
+
+  数据库连接的建立关闭消耗资源巨大 解决方式：数据库连接池
+
+  什么是连接池？
+
+  系统运行时，主动建立足够的连接，组成一个池。
+  每次应用程序请求连接，无需重新打开链接，而
+  是从池中取出已有的连接，使用完后，不再关闭，
+  而是归还
+
+  连接的释放与使用原则
+
+  为了确保连接池中最小的连接数的策略
+  a.动态检查：一旦发现数量小于最小连接数，则补充
+  b.静态检查：空闲连接不足时，系统才检测是否达到最小连接数
+
+  创建一个连接池
+
+  BasicDataSource dataSource=new BasicDataSource();
+  dataSource.setDriverClassName()/.setUrl()/.setUsername()/.setPassword();
+  dataSource.setMaxActive();           //设置最大连接数量
+  dataSource.setInitialSize();         //设置最小链接数
+  dataSource.setMinidle();             //设置最小空闲连接
+  dataSource.setMaxWait();             //设置最大等待时间
+
+  设置好之后可以通过连接池获取连接
+
+  dataSource.getConnection();          //获取一个空闲连接
+  dataSource.close();                  //关闭连接  将连接返回给连接池
+
+  -->ThreadLocal类：
+     内部是一个Map集合，key值是默认为当前线程
+     可以解决参数传递的问题
+     get();      根据当前线程获取value
+     set(value); 设置对应线程的value
+     remove();   删除对应线程的键值对
+
+
+5.Statement
+
+  Statement只适用执行不需要拼接的静态SQL语句，即内容不变的语句
+  Statement每执行一次都要对传入的SQL语句编译一次，效率较差
+
+  PreparedStatement:
+
+  适用于SQL语句中只有参数不同，其余完全相同，可预防sql注入攻击
+  PreparedStatement是接口，继承自Statement
+  PreparedStatement对象已预编译过，故其执行效率是高于Statement的
+  适用于批量操作
+
+  a.sql语句发送给数据库，并编译好为执行做好了准备
+  PreparedStatment pst = conn.prepareStatement(
+          "update emp set job=? where empno=?");
+  b.对占位符初始化
+  pst.setLong(1,"MANAGER");
+  pst.setInt(2,1001);
+  c.执行
+  pst.executeUpdate();
+
+
+6.ResultSet
+
+  从结果集中取数据时，可以用数字来代替字段名
+  select * from emp;
+  rs.getInt(1);  -->取得emp中的第一个字段
+  select ename,job from emp;
+  rs.getInt(2);  -->取得第二个字段job
+
+  从结果集中获取元数据
+  ResultSetMetaData rsm = rs.getMetaData();
+  //			获取列的总数
+	int count = rsmd.getColumnCount();
+  for(int i = 1;i<=count;i++){
+  //      获取字段名、字段类型
+  	System.out.println(rsmd.getColumnName(i));
+  	System.out.println(rsmd.getColumnTypeName(i));
+  }
+
+  可滚动结果集
+  Statement state = conn.createStatement(type,concurrency);
+  PreparedStatement ps =
+             conn.prepareStatement(sql,type,concurrency);
+  type取值:
+  TYPE_FORWORD_ONLY:只能向前移动，默认
+  TYPE_SCOLL_INSENSITIVE:可滚动，不感知数据变化
+  TYPE_SCOLL_SENSITIVE:可滚动，感知数据变化
+                       当结果集改变时，数据库能感知到数据的改变
+  concurrency取值：
+  CONCUR_READ_ONLY:只读
+  CONCUR_UPDATABLE:可更新
+  -->遍历时改数据：设置为感知数据变化且可更新
+
+
+7.事务操作
+
+  JDBC支持数据库中的事务概念
+  在JDBC中事务是默认自动提交的
+    -->自动提交：每执行一次DML操作，就会提交事务
+
+  事务的特性：
+  a.原子性：事务必须是原子工作单元，对于其数据修改，要么
+  全部执行，要么全部不执行。
+  一次提交则全部操作提交，不会漏
+  b.一致性：事务在完成时，必须使所有的数据都保持一致状态
+  确认数据是达成自己想要的样子
+  c.隔离性：由并发事务所做的修改必须与任何其他并发事务所
+  做的修改隔离。
+  d.持久性：事务完成之后，它对于系统的影响是永久性的。
+  JDBC支持数据库的事务，本质还是在数据库中的实现的
+
+  conn.setAutoCommit(false);  -->设置不自动提交
+  一系列事务
+  conn.commit();              -->提交事务
+
+8.批处理
+
+  事务虽然可以提高效率，但是主要为了保证执行事务的整体性
+  通过一次性提交提高效率
+  批处理是为了多条数据处理时，提高速度。
+  通过将SQL语句一次传到数据库
+
+  批处理用来执行DML操作
+
+  使用普通statement执行批处理
+  先将sql语句加入到本地的缓存区
+  Statement state = conn.createStatement();
+  String sql = "insert into user value("123","fyj")";
+  state.addBatch(sql);
+  然后一起执行 返回的是一个int数组
+  int[] result = state.excuteBatch();
+
+  使用preparedStatement执行批处理
+  String sql = "insert into user value("?","?")";
+  PreparedStatement ps = conn.prepareStatement(sql);
+  ps.setInt(1,123);
+  ps.setString(2,"fyj");
+  ps.addBatch();
+  ps.excuteBatch();
+
+9.返回自动主键
+
+  PreparedStatement支持一个方法，可以在执行插入操作
+  后，获取该条语句在数据库产生的记录中每个字段的值，
+  有了这个功能，我们在向表中插入数据时可以获取该主键
+  作为外键插入，而无需因为要获取主表中主键的值而进行
+  一次额外的查询。
+
+  String sql = "insert into user value(?,?,?)";
+  PreparedStatement ps =
+  conn.prepareStatement(sql,
+            new String[]{"deptno","dname"});
+  在传入预编译SQL时，同时传入一个字符串数组
+  数组中写入想要返回的字段名
+  ps.setInt(1,123);
+  ps.setString(2,"fyj");
+  ps.setString(3,"yj.fan@outlook.com");
+//执行sql
+  ps.executeUpdate();
+//获取刚刚关注的字段名字
+  ResultSet rs = ps.getGeneratedKeys();
+  while(rs.next()){
+     int deptno = rs.getInt("deptno");
+     String dname = rs.getString("dname");
+  }
+
+10.分页查询
+
+   Mysql利用limit函数(默认从零开始)
+   select * from t limit begin,pageSize;
+   
+   Oracle利用rownum
+   //对已形成的rownum进行条件过滤
+	 select * from ( 
+	 //先用一个select把待查的sql包围起来此时rownum已经形成
+   select row_.*, rownum rownum_ from ( select * from Test ) row_  
+   ) where rownum_ <= m and rownum_ >= n;
+   
+   int begin = (page-1)*pageSize+1;
+   int end = begin + pageSize - 1;
+   page:返回第几页
+   pageSize:一页多少条
+   将begin和end作为筛选条件加入到sql语句中
+   state.setInt(1,begin);
+   state.setInt(2,end);
+   每次向数据库请求一页的数据量
+   
+11.DAO(Data Access Object)数据访问对象
+   建立在数据库和业务层之间，封装所有对数据库的访问
+   属于数据持久层
+   目的：使操作数据库变得面向对象化
+         数据访问逻辑和业务逻辑分开
+   对象关系映射：
+      a.表---类
+      b.字段---属性
+      c.每条记录--每个对象
+   DAO类中应包含一些常用方法：
+   findAll();
+   findByID();
+   save();
+   update();
+   deleteById();

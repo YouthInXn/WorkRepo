@@ -1,0 +1,21 @@
+Spring框架
+Spring-FrameWork.jar下载:http://repo.spring.io  libs-framework-local/org/springframework/spring
+1.Spring IOC (控制反转/依赖倒置)   核心功能
+  依赖注入:将依赖通过配置送到面前
+  a.管理对象
+    创建 初始化  释放资源  销毁
+  b.维护对象关系
+  c.搭建SpringIOC开发环境
+    --引入相关jar包
+    --在src中添加applicationContext.xml
+    创建ApplicationContext容器对象-->applicationContext.xml--><bean></bean>
+    步骤:
+      1.搭建环境  2.定义<bean id="" class="java.util.class"></bean>  3.实例化Spring容器
+      ApplicationContext ac = new ClassPathXmlApplicationContext("url");
+      4.Object getbean("id");使用
+2.Spring AOP (面向切面编程)
+  只需要做自己关注的事情，其他的事情交给Spring去做
+  比如Spring的事务管理:(也是AOP的最大用途)
+  在事务操作的时候，关注点在于操作数据库，Spring在你访问数据库时
+  自动开启事务，当你访问结束之后，自动提交/回滚事务
+

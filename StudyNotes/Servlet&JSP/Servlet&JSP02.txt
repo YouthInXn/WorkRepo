@@ -1,0 +1,205 @@
+回顾：什么是servlet?
+
+      是一个Java类，部署服务器上，符合一定规范的组件，对Web服务器的功能进行扩展的组件
+
+      如何写一个servlst?
+
+      1.写一个Java类，继承Httpservlet。
+      2.编译
+      3.打包为一个组件  
+        --appname
+          --WEB-INF
+            --classes
+            --lib(.jar)
+            web.xml
+       4.部署 将项目文件夹拷贝到webapps下
+       5.http://IP:port/appname/url-pattern
+     
+      servlet如何运行的？--->参见Servlet&JSP01
+
+--->服务器
+
+   Tomcat同时也是一个简单的应用性Web服务器，类似的还有jboss，apache是大型web服务器。
+
+
+
+1.Http协议
+
+  1)什么是http协议
+ 
+      是由w3c制订的一种网络应用层协议，规定了浏览器与web服务器之间如何通信以及相应的数据包格式。
+      a.如何通信
+        建立连接--发送请求--发送响应--关闭连接
+      b.特点
+        一次请求，一次连接
+        如果浏览器需要发送新的请求，就需要建立新的连接，这样设计的优点是服务器可以利用有限的连接为尽可能多的请求服务。
+
+
+  2)数据包结构
+ 
+     如何抓包？
+       Eclipse showview other debug Tcp/Ip协议 设置一个代理服务器，在属性中修改端口号，服务器IP地址 启动抓包工具，在填写IP访问服务器时，端口号填写代理服务器的端口即可
+     a.请求数据包
+        请求行   请求方式 请求资源路径 协议类型/版本
+        消息头   键值对 (使用": "隔开)，表示特定的含义
+                 比如浏览器可以发送"user-agent"消息头，告诉服务器，浏览器的类型和版本
+        实体内容
+               只有当请求方式为POST时，实体内容里面才会有数据
+     b.响应数据包
+        状态行   协议类型和版本 状态码 状态描述
+                  200 正确 
+                  500 系统出错
+                  404 找不到对应资源
+        消息头   
+                  服务器也可以发送一些消息头给浏览器
+                  比如："content-type"告诉浏览器服务器返回的数据类型
+        实体内容
+                  程序处理结果，浏览器会解析其中的数据，生成相应的页面
+  3)两种请求方式
+        a.get请求
+          ·哪些情况下发送get请求？
+            直接输入某个地址 
+            点击链接
+            表单默认提交的方式　method="get"
+          ·特点
+            会将请求参数添加到资源路径后面
+            只能提交少量的数据。
+            会将请求参数显示在浏览器地址栏，不安全
+            比如路由器就会记录包含了请求参数的请求地址
+        b.post请求
+           ·哪一些情况下浏览器会发送post请求？
+              设置表单method="post";
+           ·特点
+             会将请求参数添加到实体内容里，可以提交大量的数据
+             不会把请求参数显示在浏览器地址栏，相对安全
+                   注：不会将请求参数加密 不足够安全
+        
+            --->unicode-->gbk,utf-8 编码
+                gbk------>unicode   解码
+                gbk/utf-8等都是本地字符集
+                java语言对所有字符都是unicode编码
+
+2.servlet输出中文
+
+     1)为什么会有乱码
+         out.println方法在默认情况下，会使用“iso-8859-1”来编码
+     2)如何解决？
+        在获取到输出流之前设置
+        response.setContentType("text/html;charset=utf-8");
+ 
+     -->浏览器端，会自动使用该页面目前所用的编码格式来编码
+        所以在文本框输入不会乱码
+        服务器端，
+
+
+3表单包含中文参数值
+ 
+      1)为什么会有乱码
+        表单提交时，浏览器会对表单中的中文参数值进行编码。
+        注：会按照打开表单所在的页面的字符集来编码。
+        例如静态页面设置的编码格式是utf-8，则表单就会按照utf-8的编码格式发送给服务器端。
+        服务器端默认情况下会使用"iso-8859-1"来解码
+      2)如何解决？
+        第一步：静态页面中加入
+          <meta http-equiv="content-type" content="text/html;charset=utf-8">
+          保证表单提交时，按照指定的字符集来编码。
+        第二步：服务器端使用对应的字符集来解码。
+          方式1://必须放在最前面  用来设置服务器端的解码格式
+                  request.setCharacterEncoding("utf-8");
+                  注意：该方式只适用于表单请求方式为post
+          方式2:String name=request.getParameter("uname");
+                //getBytes方法可以获得解码之前的原始字节码 并按照“utf-8”的方式解码
+                  name=new String(
+                  name.getBytes("iso-8859-1"),
+                  "utf-8");
+                   该方式可用所有请求方式
+
+
+4.读取请求参数值
+
+      1)String request.getParameter(String paramName);
+         注:
+            a.paramName必须与实际发送过来的参数名一致，
+              如果不一致，会获得null;
+            b.如果不填，会获得""
+      2)String[] request.getParameterValues(paramName);
+         注：
+            a.当有多个参数名相同时，使用该方法
+            b.对于多选框和单选框，如果不选择任何选项的话，会获得null;
+             
+5.使用JDBC访问数据库
+
+    step1, 需要将jdbc驱动的的jar文件拷贝到WEB-INF/lib下
+    step2, 使用jdbc提供的一套api去访问数据库
+    
+       mysql数据库的简单使用
+       优点：开源、简单、免费、性能好
+       创建数据库，同时设置编码
+       create database datadb_name default character set utf8;
+       创建表  (auto_increment是自增长列)
+     　create table emp(
+          id int primary key auto_increment,
+          name varchar(50),
+          sal double,
+          age int
+       );
+   
+6.重定向
+  a.什么是重定向？
+    服务器通知浏览器向一个新的地址发送请求。
+    注：
+       可以发送一个302状态码和一个Location消息头
+       (该消息头包含了一个地址，称之为重定向地址)
+       浏览器收到以后会立即向重定向地址发请求。
+  b.如何重定向
+       response.sendRedirect(String url);
+       System.out.println("这里的代码会执行");
+       重定向本质是发送命令，会把响应对象中的内容清空
+       数据包中不包含实体内容
+       重定向之后的代码依然会执行
+  c.特点
+      重定向地址是任意的
+      重定向之后浏览器地址栏会发生改变
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+               
+JSP
+4.
+    (2)
+    
+       1)html(css)直接写
+       2)java代码片段
+         <% java代码 %>
+       3)jsp表达式
+         <%= java表达式 %>
+
+    (3)隐含对象
+       1)什么是隐含对象？
+         在jsp文件里，可以直接使用的对象，比如out,request,response
+       2)为什么可以直接使用这些隐含对象？
+         容器会自动获得生成这些对象的代码
+       3)指令
+         通知容器，在将jsp文件转换为servlet类时，做一些额外的处理，比如导包。
+         语法：<%@ 指令名称 属性=属性值%>
+           a.page指令 import属性       <%@ page import="java.util.*"%> 
+                      contentType属性  response.setContentType的内容
+                      pageEncoding属性 告诉容器jsp文件的编码格式，
+                                       有些容器在读取jsp文件的时候，
+                                       是按照iso-8859-1解码的，如果
+                                       出现了中文，会出现乱码。
+5. JSP是如何执行的？
+   1.JSP运行时其实是转换为Servlet类(.jsp.java)去运行  在Tomcat下的work目录下
+     html(css,js)---->service方法里，使用out.write输出
+     <% java语句 %> ---> service方法里照搬
+     <%= java语句 %> --->在service方法里，使用out.println()输出
+   2.容器调用servlet
