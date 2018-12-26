@@ -159,6 +159,8 @@ Redux 是 JavaScript 状态容器，提供可预测化的状态管理。
 			
 				1.reducer第一次调用时，state是undefined,因此必须设置初始值
 				
+				·主 reducer 并不需要设置初始化时完整的 state。初始时，如果传入 undefined, 子 reducer 将负责返回它们的默认值。
+				
 				2.reducer的参数是原先的state,和action
 				
 				3.不要更改state本身的内容，使用Object.assign()创建新的对象返回

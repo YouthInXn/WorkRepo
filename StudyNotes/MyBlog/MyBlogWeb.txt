@@ -120,7 +120,7 @@
 			使用：
 			
 			const webpackHtmlPlugins = require('html-webpack-plugins')
-			module.exporse = {
+			module.exports = {
 				plugins:[
 					new WebpackHtmlPlugins({
 						inject:true,
@@ -145,6 +145,8 @@
 			
 					webpack-dev-server --config webpack.dev.config.js --hot
 					
+					当使用CLI模式插件会自动被启用
+					
 					当模块更新的时候，通知index.js
 					
 					index.js中添加：
@@ -161,7 +163,7 @@
 				
 			2.通过NodeJS
 			
-				参考官网。。
+				https://webpack.docschina.org/guides/hot-module-replacement
 				
 		--支持React
 		
@@ -256,6 +258,38 @@
 		
 		4.一些优化
 		
+			·reducers的拆分与合并(具体见项目中)
+			
+			·编译CSS
+			
+				npm install css-loader style-loader --save-dev
+				
+				webpack.config.js的rules中加入
+				
+				{
+					test:'/\.css$/',
+					use:['style-loader', 'css-loader']
+				}
+				
+			·编译图片
+			
+				npm install --save-dev url-loader file-loader
+				
+				webpack.dev.config.js rules增加
+
+				{
+					test: /\.(png|jpg|gif)$/,
+					use: [{
+						loader: 'url-loader',
+						options: {
+							limit: 8192
+						}
+					}]
+				}
+		
+			·按需加载
+			
+				
 			
 			
 		
