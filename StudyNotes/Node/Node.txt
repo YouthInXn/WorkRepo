@@ -406,6 +406,24 @@ npm install 命令根据这个文件自动下载所需模块
    	
    	npm install --cache-min 9999999 <package-name> // 指定所有模块从缓存获取
 	
+6.package-lock.json文件(5.4.2版本以后)
+
+	首先该文件是当node_modules变化时自动生成的文件。
+	
+	package如果版本配置时加上^选项，则每次安装时会在大版本下获取最新的小版本，导致一些版本BUG。
+	
+	作用：
+		
+		确定当前安装包的依赖，包括子依赖项，以保证在项目开发过程中使用的所有依赖版本一致。
+		
+		其构建生成了node_modules的树状结构，甚至下载地址都记录好了。
+		
+		当再次安装依赖时，就直接根据package-lock中的地址下载，速度非常快。
+		
+		当npm安装时，如果package-lock和package的状态一致，则会直接根据lock中的地址下载
+		
+		不会理会package.json
+	
 		
 	
 	
