@@ -256,42 +256,320 @@
 			简单的说，中间件就是action在到达reducer，先经过中间件处理。我们之前知道reducer能处理的action只有这样的{type:xxx}，所以我们使用中间件来处理
 			函数形式的action，把他们转为标准的action给reducer。这是redux-thunk的作用。
 		
-		4.一些优化
+	10.一些优化
+	
+		·reducers的拆分与合并(具体见项目中)
 		
-			·reducers的拆分与合并(具体见项目中)
+		·编译CSS
+		
+			npm install css-loader style-loader --save-dev
 			
-			·编译CSS
+			webpack.config.js的rules中加入
 			
-				npm install css-loader style-loader --save-dev
-				
-				webpack.config.js的rules中加入
-				
-				{
-					test:'/\.css$/',
-					use:['style-loader', 'css-loader']
-				}
-				
-			·编译图片
+			{
+				test:'/\.css$/',
+				use:['style-loader', 'css-loader']
+			}
 			
-				npm install --save-dev url-loader file-loader
-				
-				webpack.dev.config.js rules增加
+		·编译图片
+		
+			npm install --save-dev url-loader file-loader
+			
+			webpack.dev.config.js rules增加
 
-				{
-					test: /\.(png|jpg|gif)$/,
-					use: [{
-						loader: 'url-loader',
-						options: {
-							limit: 8192
-						}
-					}]
-				}
+			{
+				test: /\.(png|jpg|gif)$/,
+				use: [{
+					loader: 'url-loader',
+					options: {
+						limit: 8192
+					}
+				}]
+			}
+	
+		·按需加载
 		
-			·按需加载
+			1.以前的实现(参考webpack官方的代码分离实例)
+		
+				在React-Router4.0之前，实现代码分离核心的是require.ensure()/import()语法
+				
+				待学习：搭配reactRouter实现代码拆分&&按需加载
+				
+				http://react-china.org/t/webpack-react-router/10123
+			
+			2.现在官方修改了实现方式，使得代码分离更加容易
+			
+		·缓存
+		
+			为了确保 webpack 编译生成的文件能够被客户端缓存，而在文件内容变化后，能够请求到新的文件。
+			
+			1.修改输出文件的文件名
+			
+				每次构建生成不同的文件，告诉浏览器更新脚本
+				
+				在输出文件中加入hash值，使每次构建生成不同的文件
+				
+				-->入口文件命名：filename
+				
+					如果使用hash则加入的第三方vendor会在每次代码改变时修改hash(系统级的)
+					
+					因此filename只能用chunkhash命名
+					
+					但是chunkhash和webpack-dev-server-hot不兼容
+					
+					解决：
+					
+						
+				
+			2.提取模板
+			
+				·runtime bundle
+			
+					webpack 4以下的版本不能使用optimization
+				
+				·分离第三方代码
+				
+					webpack4之前这样配置：在插件中添加
+					
+					new webpack.optimize.CommonsChunkPlugin({ name:'vendor' })
+					
+					在入口中添加第三方模块入口
+					
+					vendor:['react', 'react-router-dom' ...]
+				
+				·减少第三方脚本的重复构建
+				
+					使用插件：
+					
+					new webpack.HashedModuleIdsPlugin()
+					
+					每次构建生成的vendor的hash值一致
+					
+					--> hash和chunkhash(个人理解)
+					
+						·hash是工程级别的，每次修改任何一个文件，hash都会变化
+						
+						·chunkhash根据不同的入口寻找依赖，为该依赖创建一个moduleID，在依赖内的文件没有发生变化时，chunkhash就不改变，分离了第三方库之后，使用chunkhash减少加载
+						
+		·文件压缩
+		
+			安装插件npm i --save-dev uglifyjs-webpack-plugin@1
+			
+			添加到plugins中
+			
+			注意版本问题！这个插件@2以上版本要求webpack为4.0以上版本！
+			
+			如果用webpack3 就安装@1
+			
+			为依赖的lib指定环境压缩第三方库
+			
+			new webpack.DefinePlugin({
+				'process.env.NODE_ENV': JSON.stringify('production')
+			})
+		
+			这两个加上可以明显减小bundle大小！
+			
+		·抽取CSS
+		
+			npm install --save-dev extract-text-webpack-plugin
+			
+			module: {
+			rules: [
+			  {
+				test: /\.css$/,
+				use: ExtractTextPlugin.extract({
+				  fallback: "style-loader",
+				  use: "css-loader"
+				})
+			  }
+			]
+			  },
+			  plugins: [
+				 new ExtractTextPlugin({
+					 filename: '[name].[chunkhash].css',
+					 allChunks: true
+				 })
+			  ]
+			  
+		·API请求优化(自定义MiddleWare优化Ajax异步请求，待研究 先用普通的方式开发)
+		
+			axios npm install --save axios
+		
+		·404页面
+		
+			将404组件放在Switch最后就可以，顺序匹配没有匹配到则404
+			
+		·添加babel配置
+		
+			先说一下，在webpack中使用babel,以下两种是一样的
+			
+				·在webpack.config.js中配置babel的插件和标准
+				·使用独立的.babelrc文件
+		
+			1.babel-polyfill
+			
+				添加环境垫片，使开发可以使用最新的API，保证全局对象的方法转码
+				
+				npm install --save-dev babel-polyfill
+				
+				入口文件第一行添加 import 'babel-polyfill'
+				
+				webpack.config.js的入口数组中添加 'babel-polyfill'
+				
+			2.babel-plugin-transform-runtime
+			
+				不污染全局变量(??)
+				
+				把babel需要的转换函数_extends等 放到一个模块下，减少项目文件大小
+				
+				npm install --save-dev babel-plugin-transform-runtime
+				
+				.babelrc 插件中添加  "transform-runtime"
+				
+		
+	11.暂时不需要的
+	
+		·postCSS插件
+		
+			为样式自动添加浏览器前缀(暂不需要)
+			
+		·模拟数据Mock
+		
+	12.UI框架选择
+	
+		·Fabric 
+		·Grommet
+		·React-toolbox
+		·react-bootstrap
+		·Blueprint
+		·Ant-Design
+		·Semantic-UI-React
+		·React Desktop
+		·Material-UI 就你了！
+		。。。(头大)
+		
+--> 开发中的问题：
+
+	1.Material-UI导致打的入口包非常大，如何按需加载？
+	
+		首先分离第三方Material-UI的代码库，在vendors中加入 dev依赖的UI库
+		
+		后续按需加载再处理。。
+		
+	2.个人头像加载不出来
+	
+		webpack-dev-server加载资源的路径是contentBase，因此需要手动将静态资源拷贝到dist目录下
+		
+		另外dev-server的publicPath可以配置URL直接可访问的静态资源 /public/ 只公开public下的文件
+		
+	3.dev-server每次热加载都要打包一次vendors,加载非常慢
+		
+		将压缩和处理第三方的运行环境的webpack插件提取到生产环境中去
+		
+		开发环境的出口名称改为[name].js，速度明显提升，虽然文件很大，但只在开发环境下
+		
+	4.消息和loading状态统一管理
+	
+		目前是写了一个组件，包含消息条和loading,该组件监听store中的变化，若状态改变，则进入loading/弹出消息条。
+		
+	5.登录如何持久化？
+	
+		cookie session koa-session的学习，再server笔记中记录
+		
+	6.当地址为localhost:3000/author/aboutme时，脚本请求地址变为localhost:3000/author/runtime.js导致404
+	
+		webpack配置中的output添加publicPath:'/' (绝对路径，只在host下请求脚本 ‘./’是相对路径，脚本随之变化)
 			
 				
+	7.API请求优化
+	
+		1.自定义PromiseMiddleware，在个人博客中有保留
+		
+		2.使用redux-promise第三方库优化API请求
+		
+		源码：
+		
+			import { isFSA } from 'flux-standard-action';
+
+			function isPromise(val) {
+			  return val && typeof val.then === 'function';
+			}
+		
+			export default function promiseMiddleware({ dispatch }) {
+			  return next => action => {
+			  // 判断是否为标准的flux action
+				if (!isFSA(action)) {
+				  return isPromise(action)
+					? action.then(dispatch)
+					: next(action);
+				}
+
+				return isPromise(action.payload)
+				  ? action.payload.then(
+					  result => dispatch({ ...action, payload: result }),
+					  error => {
+						dispatch({ ...action, payload: error, error: true });
+						return Promise.reject(error);
+					  }
+					)
+				  : next(action);
+			  };
+			}
+		
+		优化之后的action:
+		
+		const fetchData = (url, params) => fetch(url, params)
+		async function getWeather(url, params) {
+			const result = await fetchData(url, params)
+			if (result.error) {
+				return {
+					type: 'GET_WEATHER_ERROR', error: result.error,
+				}
+			}
+			return {
+				type: 'GET_WEATHER_SUCCESS', payload: result,
+			}
+		}
+		
+		原理：
+		
+			来自阮老师的个人博客
 			
+			使用了该中间件以后，dispatch可以接受Promise作为参数，这时，ActionCreator有两种写法
 			
+			1.返回一个Promise,只有当promise成功时才会自动派发action,代码执行这里
+			
+			// 判断是否为标准的flux action
+			if (!isFSA(action)) {
+			  return isPromise(action)
+				? action.then(dispatch)
+				: next(action);
+			}
+			
+			2.返回一个符合FSA的Action，但是其payload必须是一个promise,无论是否成功都会派发action
+		
+	8.FSA
+	
+		是一个命名flux action的标准
+		
+		http://www.ptbird.cn/flux-standard-action.html
+		
+	9.关于redux-thunk的思考，重新理解
+	
+		action.js中创建了一堆类似 const testAction = (args) => async (dispatch, getState) => { ... } 这样形式的ActionCreators,容器组件将其作为属性映射到组件上，可以理解为将函数的地址告诉了组件，但是并没有调用！
+		
+		在函数中，比如 componentDidMount() { this.props.testActionCreators(args)}
+		这样调用，这时，redux-thunk就起作用了！
+		
+		1.首先经过redux-thunk中间件，将dispatch改造(具体见redux.txt --Redux thunk！)，使其可以接受一个函数为对象
+		
+		2.然后该函数this.props.testActionCreators(args)执行，其实也就是执行强化后的dispatch,具体做了两件事情，将(dispatch, getState, args)参数传递给action,调用该action!
+		
+	10.async函数的返回值
+	
+		若在 async 函数中 return 了一个值 x, 不管 x 值是什么类型, async 函数的实际返回值总是 Promise.resolve(x).
+		
+	
 		
 		
 		

@@ -237,7 +237,85 @@
 				
 				本笔记更多参考于：https://blog.csdn.net/qq_15437667/article/details/78841335?utm_source=blogxgwz2
 				
-				
+4.SessionStorage(会话存储)(待完善)
+
+	1.问题
+	
+		使用state给某组件传递参数，如何再次访问该路由(带参数加载的)？
+	
+	2.解决
+	
+		a.离开前确认，不再允许进入存储的路由(不合理)
+		
+		b.重定向：sessionStorage中有值的话，重定向到最后一个state的路由。(未能实现)
+		
+		c.直接操作sessionStorage
+		
+			权限组件入口检测如果sessionStorage中存有Role，则显示管理界面
+	
+	3.学习
+	
+		1.什么是SessionStorage？
+		
+			SessionStorage是HTML5新增的一个会话存储对象，用于临时保存同一窗口的数据，关闭之后会清空。
+			
+		2.API参考
+		
+			https://www.cnblogs.com/polk6/p/5512979.html
+			
+5.JS对象复制的坑
+
+	1.问题
+	
+		状态中存储了这样的数据结构：this.state.years = [{status:9, year:2018}, {status:9, year:2019}]
+		
+		为了不直接修改state这样去改
+		
+		const years = [...this.state.years].map(i => ...)
+		
+		结果原来的state还是直接被修改了
+		
+	2.解决
+	
+		[ ...this.state.years ]在被babel编译之后变成了 concat([], this.state.years)
+		
+		这里注意，[...this.state.years]和this.state.years确实是不相等的，数组的地址发生了变化
+		
+		但是里面的元素确是指向拷贝之前的源数组，因此当你操作数组元素的时候，源数组会发生变化
+		
+		刚开始以为是concat的拷贝问题，用Object.assign([], this.state.years)也是一样的
+		
+		所以结论是：
+		 
+		数组拷贝都只是浅拷贝，只新建一个数组的地址，里面的元素都是指向源数组的（当数组中的元素不是基本类型的时候）
+		
+		一个全是基本类型的数组不存在这种问题let a = [1,2,3] [...a][0] = 4  a还是原来的值
+		
+		两种解决方案：
+		
+			1.数组深层拷贝(可以用for循环)
+			
+			2.拷贝数组中的每个对象
+			
+			const years = this.state.years.map(i => {
+				let i_copy = { ...i }
+				// 操作i_copy不会影响源数组
+			})
+			
+	3.扩展
+	
+		对象和数组一样，...语法只能拷贝当前层级的地址(浅拷贝)，举个栗子
+		
+		let t = { a：{ b:1 } }
+		
+		let t_copy = { ...t }
+		
+		t_copy.a.b = 2
+		
+		t  // { a: { b:2 } } 
+		
+		虽然t_copy和t整体两个对象指向不同的地址 但是{b:1}都是指向同一个地址
+		
 		
 		
 		

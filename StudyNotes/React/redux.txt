@@ -151,6 +151,30 @@ Redux 是 JavaScript 状态容器，提供可预测化的状态管理。
 				
 				将该对象作为bindActionCreators的第一个参数，也就相当于隐式地调用了dispatch函数。
 				
+	-Middleware:
+	
+		扩展action到达reducer之前的点。
+		
+		主要是给dispatch加强功能。
+		
+		// 如何应用中间件？并保证顺序执行？
+		function applyMiddleware(store, middlewares) {
+		  middlewares = middlewares.slice()
+		  middlewares.reverse()
+		  
+		  // 保留最开始的
+		  let dispatch = store.dispatch
+		  middlewares.forEach(middleware =>
+			// 链式调用该方法， logger(store)(dispatch)返回一个加强版的dispatch函数
+			dispatch = middleware(store)(dispatch)
+		  )
+		  // 替换store中的dispatch,就将中间件应用到了store中
+		  return Object.assign({}, store, { dispatch })
+		}
+		
+		// 中间件类似这样
+		const logger = (store) => (next) => (action) => { ... }
+				
 	Reducer的拆分与合并
 	
 		一个应用只有一个Reducer函数，这个函数是传递给CreateStore的第一个参数
@@ -274,9 +298,60 @@ showNotificationWithTimeout('You just logged in.')(this.props.dispatch)
 
 this.props.dispatch(showNotificationWithTimeout('You just logged in'))
 
+// 参数中showNotificationWithTimeout('You just logged in')是直接调用的，在项目中一般由组件触发！
 //showNotificationWithTimeout这个方法返回一个需要dispatch作为参数的函数，外面的
 //this.props.dispatch则会作为返回的函数的第一个参数，然后调用该函数！
 
+源码：
 
-    
+function createThunkMiddleware(extraArgument) {
+  return ({ dispatch, getState }) => next => action => {
+    if (typeof action === 'function') {
+      return action(dispatch, getState, extraArgument);
+    }
+
+    return next(action);
+  };
+}
+
+const thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+export default thunk;
+ 
+原文：https://blog.csdn.net/liwusen/article/details/79677827 
+
+理想化的applyMiddleware源码：
+
+function applyMiddleware(store, middlewares) {
+  middlewares = middlewares.slice()
+  middlewares.reverse()
+
+  let dispatch = store.dispatch
+  middlewares.forEach(middleware =>
+    dispatch = middleware(store)(dispatch)
+  )
+
+  return Object.assign({}, store, { dispatch })
+}
+
+调用：
+
+import thun from 'redux-thunk'
+store.createStore(reducer,applyMiddleware(thunk))
+
+因此，以上实则将dispatch强化为这样的一个函数
+
+const dispatch = action => {
+	// 注意：async function() {} 用typeof判断， 结果也是'function'
+	if (typeof action === 'function') {
+	  // 调用该函数
+	  return action(dispatch, getState, extraArgument);
+	}
+	
+	return next(action);
+};
+  
+在此基础上再去理解，从this.props.testActionCreator() 到 调用action都发生了什么！ --->MyBlogWeb 9.
+
     

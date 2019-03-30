@@ -95,3 +95,124 @@ I.概念
 					]
 				}
 			}
+			
+II. 实战
+
+	根据webpack官方教学一步一步学习使用webpack.
+	
+	这里记录我所遇到的问题
+	
+	·npx命令：(Node 8.2/npm 5.2.0 以上版本)
+	
+		一次性命令执行工具，自动帮你执行依赖包中的二进制文件(bin 命令)
+		
+		npx webpack
+		
+		该命令会自动查找当前依赖包webpack中的可执行文件，如果找不到，就去系统中的path找，
+		
+		如果依然找不到就帮你一次性安装并执行
+		
+	·webpack对import  export命令的处理
+	
+		内部打包自动转换为兼容各大浏览器的语法！
+		
+		使用webpack该命令可以直接使用!
+		
+	·技巧：
+	
+		"build":"webpack",
+		
+		npm run build -- --colors 该命令会传递给webpack
+	
+		查看webpack引入的css文件，应该使用检查，而不是查看网页源代码
+		
+	·管理输出
+	
+		html-webpack-plugin:自动帮你生成html模板文件到dist下(模板配置参考官网API)
+		html-webpack-template:额外的功能
+		clean-webpack-plugin:每次构建自动清理dist文件夹 ==》new CleanWebpakPlugin(['dist'])
+		
+	·开发
+	
+		源码映射：
+		
+		source-map:源码映射 更多配置选项参考官网 简单采用 inline-source-map
+		
+		自动编译：
+			
+			webpack's Watch Mode：观察者模式，每次更新自动编译，但是需要手动刷新浏览器
+			webpack-dev-server(最常用)
+			webpack-dev-middleware:(需要搭配express/KOA)待研究
+			
+	·tree-shaking
+	
+		用于移除上下文中未使用到的代码。
+		
+		当一个模块多次导出，但是只有一个导出被引用的时候，其余导出便成为了无用代码。
+		
+		tree-shaking就是干这个的，删掉无用代码，在webpack中配置参考官方教学
+		
+	·生产环境构建(基础)
+		
+		使用webpack-merge小工具实现不同环境下的配置分离
+		
+		安装 npm install --save-dev webpack-merge
+		
+		配置分离为三个文件
+		
+			-webpack.common.js,
+			-webpack.dev.js,
+			-webpack.prod.js
+			
+	·代码分离
+	
+		1.入口分离 + 防止重复
+		
+		2.动态导入 
+		
+			1.import()语法
+			
+				使用async await异步导入模块
+				
+				await import(
+				//  通过注释控制模块名称等
+				/* webpackChunkName:"lodash_test" */
+				// 路径
+				'lodash'
+				);
+				
+				注意当调用 ES6 模块的 import() 方法（引入模块）时，必须指向模块的 .default 值，因为它才是 promise 被处理后返回的实际的 module 对象。
+				
+				各种框架都是基于Webpack import()语法实现的代码拆分
+				
+				-->React中的代码拆分查看React官网，笔记在React-代码拆分部分
+			
+			2.require.ensure(); 过时了
+			
+		3.缓存
+		
+			浏览器的缓存技术会使得代码更新出现问题。
+			
+			通过必要的配置，以确保 webpack
+			编译生成的文件能够被客户端缓存
+			而在文件内容变化后，能够请求到新的文件。
+			
+			·输出文件的文件名修改
+			
+			  filename:'[name].[chunkhash].js'
+			  
+			·HashedModuleIdsPlugin
+			
+				该插件保证第三方依赖不会被多次打包构建，加快构建速度
+				
+		4.离线体验
+			
+			
+			
+		
+		
+		
+	
+		
+	
+	

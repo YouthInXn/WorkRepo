@@ -1,0 +1,215 @@
+
+----从零搭建自己的个人博客(服务端)---- 
+
+	KOA+ES6+MongoDB+REST
+	
+
+1.安装必要的依赖
+
+	npm install --save koa
+	npm install --save koa-router
+	npm install --save koa-bodyparser
+	
+2.数据库安装
+
+	从官网下载对应的msi安装程序
+	
+	参照官网教程安装，最后一步记得取消勾选install MongoDB Compass,否则非常慢
+	
+	安装完成之后，创建数据保存目录
+	
+	在任意位创建以下目录：
+	
+	-data
+		conf
+			-mongod.conf	数据库配置文件
+		db		数据库目录
+		log		数据库日志目录
+			-mongodb.log
+			
+	接下来启动服务
+	
+	进入MongoDB的安装目录/bin下，执行命令
+	
+	mongod  --dbpath '/data/db'(目录自己指定)
+	
+	官网教程给出的命令不可用，可能是因为版本问题
+	
+	执行以下命令，将MongoDB安装为windows 服务
+	
+	mongod --dbpath "f:\data\db" --logpath "f:\data\log\mongodb.log" --serviceName "mongodb" --serviceDisplayName "mongodb" --install
+	
+	参数后的具体路径按照自己的路径修改，执行完成之后，可以看到log目录被替换的提示
+	
+	打开Window+R, 输入 services.msc,可以看到MongoDB Server已经启动，访问localhot:27017看到
+	
+	It looks like you are trying to access MongoDB over HTTP on the native driver port.
+	
+	即正常启动
+	
+3.mongoose数据建模
+
+	mongoose为MongoDB数据建模，为原生的MongoDB API提供了更方便的数据管理和功能。
+	
+	具体使用参照mongoose的官网教学
+	
+	·mongoose的问题
+	
+		
+		1.数据库选择
+		
+			在url中声明，若没有显示指定，则默认连接到MongoDB的TEST数据库，url应该这样声明
+			
+			mongodb://localhost:port/databasename
+			
+		2.集合命名问题
+		
+			在定义模式时，options中配置
+			
+			new Schema([], {collection:'xx'}) 
+			
+			or
+			
+			在定义模型时候配置,指定该模型应用的集合名称
+			
+			model(modelName,[schema], 'xx')
+			
+			若都没有指定，则会判断模型名称modelName是否可数，可数则加's'，不可数就用modelName
+		
+		3.__v字段
+		
+			该字段是用来记录版本信息的，不需要的话可以关闭
+			
+			new Schema([], { versionKey:false })
+			
+4.node热加载开发配置
+
+	npm install -g supervisor
+	
+	或者 npm install --save-dev nodemon
+	
+	更换启动命令
+	
+	supervisor app.js
+	
+	nodemon app.js
+	
+5.添加静态资源访问
+
+	npm install --save koa-static
+	
+	app.use(server(path.join(__dirname, 'public'))
+	
+6.跨域设置
+
+	// 跨域设置
+	app.use(async function (ctx, next) {
+	  // ctx.request.originalUrl
+	  if (ctx.request.method === 'OPTIONS') {
+		ctx.response.status = 200
+	  }
+	  ctx.response.set('Access-Control-Allow-Origin', 'http://localhost:3001')
+	  ctx.response.set('Access-Control-Allow-Methods','OPTIONS,GET,POST,PUT,DELETE')
+	  ctx.response.set('Access-Control-Allow-Headers', 'content-type')
+	  await next()
+	})
+	
+7.登录持久化
+
+	1.cookie
+	
+		a.什么是cookie?
+		
+		cookie就是一段文本，存储在客户端，通常是浏览器，由键值对构成，每个键值对有过期时间/域/脚本可否访问等描述信息。在客户端发送请求时，默认会带上cookie的名称和值，不会带描述信息，通过加在http请求的header中的cookie字段进行传输，服务器响应时，可以在http请求头中设置cookie项，也就是修改响应header的setcookie字段。
+		
+		b.作用?
+		
+		http无状态，服务器无法知道请求是哪个用户发送的，cookie就是为了解决http的无状态应运而生的。当某客户端第一次发送请求时，服务器发现没有该用户，就给该用户设置cookie,分配一个id,当该用户第二次访问服务器时，自动携带cookie，服务器便知道是哪个用户发送的请求了，以此来记录用户的状态，将多次访问构成了一次会话。
+		
+		c.cookie的构成
+		
+		键值对
+		
+		过期时间,expires
+		
+			cookie并不是一直存在的，通过expires字段表示过期时间，由于cookie没有delete方法，因此只能通过过期时间实现删除，如过cookies没有设置expires,默认是关闭浏览器时失效。
+			
+		域，domain
+		
+			设置了域名后，该域名可访问该cookie, 若value中以.开头，则该域名以及该域名下的子域名都可访问，若不带点，则只有完全一样的域名才可访问。
+		
+		路径，path
+		
+			不同路径下的cookie不可互相访问
+			
+			以上的domain和path共同构成了URL，一起限制cookie可以被哪些url访问，包括设置的domain的子域名以及path的子路径在内都可访问。(但不包括XHR请求)
+			
+			
+		
+		secure
+		
+			该字段表示时候只有在安全协议时，才会将cookie发送到服务端,但并不代表你看不到该cookie(https, ssl)
+		
+		httponly
+		
+			只用于传输，js脚本不可访问,加强安全
+			
+		d.cookie的使用
+		
+			为了防止cookie滥用，每个域名下的cookie大小被限制最大为4kb,每个域名下的cookie数量最多为20个。
+			
+			cookie既可由服务端设置，也可以由客户端设置
+
+			服务端设置：
+			
+				在response的响应头中设置setCookie字段
+				每个setcookie字段对应一个cookie
+				
+			客户端设置，通过document.cookie=""
+			
+				·无法在http协议的网页下设置secure
+				·无法设置httpOnly选项
+				
+			修改：
+			
+				修改cookie就是重新赋值即可，但注意name/path/domain选项要保持一致，否则会生成新的cookie
+				
+			删除：
+			
+				即修改某cookie的expires字段为一个过去的时间点
+				
+			cookie的跨域使用
+			
+				在发送跨域请求时，浏览器不会自动添加cookie,这是CORS标准中做的规定，默认情况下，浏览器在发送跨域请求时，不能发送任何认证信息，除非xhr.withCredentials为true.
+				
+				因此在处理跨域请求时，客户端需要修改xhr的withCredentials字段为true,服务端需要添加消息头Access-Control-Allow-Credentials:true,这样浏览器才会将cookie自动加入到请求头中。
+		
+				目前个人网站先使用cookie实现持久化以及自动登录，session有待后续的学习。
+				
+	2.session
+	
+
+			
+				
+			
+		
+		
+		
+		
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+
