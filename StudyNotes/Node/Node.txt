@@ -335,7 +335,7 @@ npm install 命令根据这个文件自动下载所需模块
    	
    	到这个网址下载压缩包在本地解压就得到该模块的源码。
    	
-   	npm install和 npm updata都是通过这种方式去安装模块的。
+   	npm install和 npm update都是通过这种方式去安装模块的。
    	
    2.缓存目录
    
@@ -424,8 +424,21 @@ npm install 命令根据这个文件自动下载所需模块
 		
 		不会理会package.json
 	
-		
+7.npm link
+
+	该命令可以关联本地的模块
 	
+	在要被 引用/关联 的模块下执行 npm link;
+	
+	你会发现在 {prefix}/node_modules/下多了一个快捷方式，指向该模块
+	
+	prefix查看方式：npm config get prefix;
+	
+	其实也就是将该文件在全局的node仓库添加了快捷方式
+	
+	然后在需要引用该模块下执行 npm link <package>  
+	
+	package指的是要被引用的模块名，这样在该模块下就可以访问到全局仓库中的 package
 	
 	
 	
